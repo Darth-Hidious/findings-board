@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getConfig, githubProfileUrl, xProfileUrl } from "@/lib/config";
 import { listPublicFindings } from "@/lib/db";
 import { FindingsFeed } from "@/components/portfolio/FindingsFeed";
+import { SiteHeader } from "@/components/portfolio/SiteHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -10,161 +11,220 @@ export default function HomePage() {
   const findings = listPublicFindings();
   const github = githubProfileUrl(config.githubUsername);
   const x = xProfileUrl(config.xHandle);
+  const linkedin =
+    "https://www.linkedin.com/in/siddhartha-yash-kovid-2688891a8/";
 
   return (
-    <div className="page">
-      <header className="site-header">
-        <h1>{config.siteName}</h1>
-        <p className="meta">
-          Technical lead · AI, aerospace &amp; materials systems
-        </p>
-        <nav>
-          <a href="#about">About</a>
-          <a href="#work">Work</a>
-          <a href="#findings">Findings</a>
-          <a href="/cv.pdf" target="_blank" rel="noreferrer">
-            CV
-          </a>
-          <a href={github} target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          <a href={x} target="_blank" rel="noreferrer">
-            X/@{config.xHandle}
-          </a>
-          <a
-            href="https://www.linkedin.com/in/siddhartha-yash-kovid-2688891a8/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            LinkedIn
-          </a>
-          <Link href="/board">Posting board</Link>
-        </nav>
-      </header>
-
-      <hr />
-
-      <section id="about">
-        <h2>About</h2>
-        <p>
-          Technical lead and founder working at the intersection of autonomous
-          R&amp;D, advanced materials, and aerospace systems. I build funded
-          programs, research consortia, and deployable AI prototypes from first
-          concept through institutional adoption.
-        </p>
-        <p>
-          Current focus: agentic materials discovery, extreme-temperature
-          propulsion materials, and spoof-resilient navigation / state
-          estimation.
-        </p>
-        <p className="muted">
-          {config.siteTagline} Serious output lives in repositories; this page
-          is a quiet index. Threads are drafted on the private board, then
-          posted when ready.
-        </p>
-      </section>
-
-      <section id="work">
-        <h2>Selected work</h2>
-        <ul>
-          <li>
-            <strong>Autonomous material discovery</strong> — agentic,
-            closed-loop pipeline for extreme-temperature space materials (ESA /
-            NASA framework). Related public work:{" "}
-            <a
-              href="https://github.com/Darth-Hidious/PRISM"
-              target="_blank"
-              rel="noreferrer"
-            >
-              PRISM
+    <>
+      <SiteHeader />
+      <main className="shell">
+        <article className="panel hero">
+          <p className="eyebrow">Curriculum vitae · portfolio</p>
+          <h1>{config.siteName}</h1>
+          <p className="lede">
+            Technical lead at the intersection of autonomous R&amp;D, advanced
+            materials, and aerospace systems. Funded programs, research
+            consortia, and deployable AI prototypes.
+          </p>
+          <div className="hero-actions">
+            <a className="btn btn-primary" href="/cv.pdf" target="_blank" rel="noreferrer">
+              Download CV
             </a>
-            .
-          </li>
-          <li>
-            <strong>Project SPARK</strong> — ESA-funded extreme-temperature
-            alloys for next-generation propulsion (consortium with ArianeGroup,
-            IPPT PAN).
-          </li>
-          <li>
-            <a
-              href="https://github.com/Darth-Hidious/kc-ukf"
-              target="_blank"
-              rel="noreferrer"
-            >
-              KC-UKF
-            </a>{" "}
-            /{" "}
-            <a
-              href="https://github.com/Darth-Hidious/kc-ukf-nav"
-              target="_blank"
-              rel="noreferrer"
-            >
-              kc-ukf-nav
-            </a>{" "}
-            — kinematic compatibility-field UKF; spoof-resilient GNSS/INS
-            cross-sensor trust (NAVICON 2026).
-          </li>
-          <li>
-            <a
-              href="https://github.com/Darth-Hidious/wams2026-lunar-metallurgy"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Lunar metallurgy analysis
-            </a>{" "}
-            — terrane-aware framework; WAMS 26 invited talk at ESA ESTEC.
-          </li>
-          <li>
-            <strong>Differentiable ML modeling</strong> — Horizon Europe / EIC
-            Pre-Accelerator work with Fraunhofer; EIC Seal of Excellence, 2026.
-          </li>
-        </ul>
-        <p className="meta">
-          Public repositories:{" "}
-          <a href={github} target="_blank" rel="noreferrer">
-            github.com/{config.githubUsername}
-          </a>
-          . Private program work is ingested on the board when a GitHub token is
-          configured — not listed here by default.
-        </p>
-      </section>
+            <a className="btn" href={github} target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            <a className="btn" href={linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+            <a className="btn" href={x} target="_blank" rel="noreferrer">
+              @{config.xHandle}
+            </a>
+          </div>
+          <div className="pill-row">
+            <span className="pill">AI / materials</span>
+            <span className="pill">Aerospace</span>
+            <span className="pill">Navigation</span>
+            <span className="pill">THM · expected 2027</span>
+          </div>
+        </article>
 
-      <section id="notes">
-        <h2>Notes</h2>
-        <ul>
-          <li>B.Sc. Medical Engineering, THM — expected 2027.</li>
-          <li>MIT Professional Education — Applied AI &amp; Data Science (2026).</li>
-          <li>IEEE member.</li>
-          <li>
-            PDF curriculum vitae: <a href="/cv.pdf">cv.pdf</a>.
-          </li>
-        </ul>
-      </section>
+        <section className="panel section" id="about">
+          <div className="section-head">
+            <h2>About</h2>
+            <p>What I work on, without the launch-speak.</p>
+          </div>
+          <p>
+            I lead and found work across autonomous discovery, extreme-temperature
+            propulsion materials, and spoof-resilient navigation / state
+            estimation. The through-line is turning hard technical ideas into
+            funded, partnered programs that institutions can actually run.
+          </p>
+          <p className="muted">
+            {config.siteTagline} Most of the serious output lives in
+            repositories. This site is the public index; the private board drafts
+            threads when something is ready to ship.
+          </p>
+        </section>
 
-      <FindingsFeed findings={findings} xHandle={config.xHandle} />
+        <section className="panel section" id="impact">
+          <div className="section-head">
+            <h2>Selected impact</h2>
+            <p>Markers from recent programs and recognition.</p>
+          </div>
+          <ul className="impact-grid">
+            <li className="impact-item">
+              <strong>2 ESA prime projects</strong>
+              <span>Secured and led under Bimo Tech consortia</span>
+            </li>
+            <li className="impact-item">
+              <strong>EIC Seal of Excellence</strong>
+              <span>Horizon Europe / EIC Pre-Accelerator, 2026</span>
+            </li>
+            <li className="impact-item">
+              <strong>WAMS 26 · ESA ESTEC</strong>
+              <span>Invited speaker and accepted paper</span>
+            </li>
+            <li className="impact-item">
+              <strong>StartMiUp winner</strong>
+              <span>Hackathon MVP architect, Abicor Binzel challenge</span>
+            </li>
+          </ul>
+        </section>
 
-      <hr />
-      <footer className="meta">
-        <p>
-          Contact via{" "}
-          <a href={github} target="_blank" rel="noreferrer">
-            GitHub
-          </a>
-          ,{" "}
-          <a href={x} target="_blank" rel="noreferrer">
-            X
-          </a>
-          , or{" "}
-          <a
-            href="https://www.linkedin.com/in/siddhartha-yash-kovid-2688891a8/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            LinkedIn
-          </a>
-          . No street address on this page.
-        </p>
-      </footer>
-    </div>
+        <section className="panel section" id="work">
+          <div className="section-head">
+            <h2>Selected work</h2>
+            <p>Programs and public technical artifacts.</p>
+          </div>
+          <ul className="work-list">
+            <li>
+              <h3>Autonomous material discovery</h3>
+              <p className="work-meta">ESA / NASA framework · related: PRISM</p>
+              <p>
+                Agentic, closed-loop discovery pipeline combining ML with
+                self-driving laboratory ideas for extreme-temperature space
+                materials.{" "}
+                <a
+                  href="https://github.com/Darth-Hidious/PRISM"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  github.com/Darth-Hidious/PRISM
+                </a>
+              </p>
+            </li>
+            <li>
+              <h3>Project SPARK</h3>
+              <p className="work-meta">
+                ESA-funded consortium · ArianeGroup, IPPT PAN
+              </p>
+              <p>
+                Extreme-temperature alloys for next-generation space propulsion
+                inside a multi-institution European program.
+              </p>
+            </li>
+            <li>
+              <h3>KC-UKF / spoof-resilient navigation</h3>
+              <p className="work-meta">NAVICON 2026 · Zenodo preprint</p>
+              <p>
+                Kinematic compatibility-field UKF for multi-sensor fusion and
+                cross-sensor trust in GNSS/INS under adversarial degradation.{" "}
+                <a
+                  href="https://github.com/Darth-Hidious/kc-ukf"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  kc-ukf
+                </a>
+                {" · "}
+                <a
+                  href="https://github.com/Darth-Hidious/kc-ukf-nav"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  kc-ukf-nav
+                </a>
+              </p>
+            </li>
+            <li>
+              <h3>Lunar metallurgy analysis</h3>
+              <p className="work-meta">WAMS 2026 · ESA ESTEC</p>
+              <p>
+                Terrane-aware lunar metallurgy framework and analysis pipeline.{" "}
+                <a
+                  href="https://github.com/Darth-Hidious/wams2026-lunar-metallurgy"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  repository
+                </a>
+              </p>
+            </li>
+            <li>
+              <h3>Differentiable ML modeling</h3>
+              <p className="work-meta">
+                Horizon Europe / EIC Pre-Accelerator · Fraunhofer
+              </p>
+              <p>
+                Production scale-up proposal work awarded the EIC Seal of
+                Excellence; co-developing differentiable models for complex fluid
+                / pool dynamics.
+              </p>
+            </li>
+          </ul>
+        </section>
+
+        <section className="panel section" id="credentials">
+          <div className="section-head">
+            <h2>Education &amp; credentials</h2>
+            <p>Background without dumping every line of the PDF.</p>
+          </div>
+          <div className="creds">
+            <div className="cred">
+              <h3>THM</h3>
+              <p className="meta">B.Sc. Medical Engineering · expected 2027</p>
+            </div>
+            <div className="cred">
+              <h3>MIT Professional Education</h3>
+              <p className="meta">Applied AI &amp; Data Science · 2026</p>
+            </div>
+            <div className="cred">
+              <h3>IEEE</h3>
+              <p className="meta">Member</p>
+            </div>
+            <div className="cred">
+              <h3>Languages</h3>
+              <p className="meta">German C1 · English C1 · Hindi native</p>
+            </div>
+          </div>
+          <p className="meta" style={{ marginTop: "1rem" }}>
+            Full detail: <a href="/cv.pdf">cv.pdf</a>
+          </p>
+        </section>
+
+        <FindingsFeed findings={findings} xHandle={config.xHandle} />
+
+        <footer className="site-footer">
+          <p>
+            Contact via{" "}
+            <a href={github} target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            ,{" "}
+            <a href={x} target="_blank" rel="noreferrer">
+              X
+            </a>
+            , or{" "}
+            <a href={linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
+            . Location and phone are not published on this page.
+          </p>
+          <p>
+            <Link href="/board">Posting board</Link> is private.
+          </p>
+        </footer>
+      </main>
+    </>
   );
 }

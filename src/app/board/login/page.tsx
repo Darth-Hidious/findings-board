@@ -10,18 +10,20 @@ export default async function BoardLoginPage() {
 
   return (
     <div className="page">
-      <header className="site-header">
-        <h1>Findings board — login</h1>
-        <p className="meta">
-          Private posting desk. Use the password from your Vercel env
-          (<code>BOARD_PASSWORD</code>). Do not share it in chat.
-        </p>
-        <nav>
-          <Link href="/">Home</Link>
-        </nav>
-      </header>
-      <hr />
-      <LoginForm />
+      <div className="board-shell">
+        <header className="site-header">
+          <h1>Findings board</h1>
+          <p className="meta">
+            Private posting desk. Password is in your Vercel project env as{" "}
+            <code>BOARD_PASSWORD</code> — don’t share it in chat.
+          </p>
+          <nav>
+            <Link href="/">Home</Link>
+          </nav>
+        </header>
+        <hr />
+        <LoginForm />
+      </div>
     </div>
   );
 }

@@ -174,6 +174,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
 
   return (
     <div className="page page-wide">
+      <div className="board-shell">
       <header className="site-header">
         <h1>Findings board</h1>
         <p className="meta">
@@ -349,6 +350,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
             </>
           )}
         </section>
+      </div>
       </div>
     </div>
   );

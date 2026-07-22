@@ -8,15 +8,19 @@ export function FindingsFeed({
   xHandle: string;
 }) {
   return (
-    <section id="findings">
-      <h2>Findings</h2>
-      <p className="muted">
-        Notes and thread drafts pulled from the same store as the posting
-        board. Plain records of what shipped.
-      </p>
+    <section className="panel section" id="findings">
+      <div className="section-head">
+        <h2>Findings</h2>
+        <p>
+          Public notes and threads from the posting board — typed, not hyped.
+        </p>
+      </div>
 
       {findings.length === 0 ? (
-        <p>No findings yet. Use the board to ingest GitHub and draft threads.</p>
+        <p className="muted">
+          Nothing published here yet. Drafts stay on the private board until
+          approved.
+        </p>
       ) : (
         <ul className="findings-list">
           {findings.map((finding) => (
@@ -28,7 +32,7 @@ export function FindingsFeed({
               </h3>
               <p className="meta">
                 {finding.status}
-                {finding.dryRun ? ", dry-run" : ""}
+                {finding.dryRun ? " · dry-run" : ""}
                 {finding.repoFullName ? ` · ${finding.repoFullName}` : ""}
               </p>
               <p>{finding.summary}</p>
@@ -40,12 +44,12 @@ export function FindingsFeed({
               )}
               {finding.threadJson.length > 0 && (
                 <ol className="thread-list">
-                  {finding.threadJson.slice(0, 5).map((tweet, i) => (
+                  {finding.threadJson.slice(0, 4).map((tweet, i) => (
                     <li key={`${finding.id}-${i}`}>{tweet.text}</li>
                   ))}
                 </ol>
               )}
-              <p>
+              <p className="meta">
                 <a href={finding.repoUrl} target="_blank" rel="noreferrer">
                   repository
                 </a>
