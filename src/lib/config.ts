@@ -19,11 +19,11 @@ export type AppConfig = {
 
 export function getConfig(): AppConfig {
   return {
-    siteName: process.env.SITE_NAME || "Siddhartha Kovid",
+    siteName: process.env.SITE_NAME || "Tim the Enchanter",
     siteTagline:
       process.env.SITE_TAGLINE || "Cool findings. Typed, not hyped.",
-    githubUsername: process.env.GITHUB_USERNAME || "",
-    xHandle: (process.env.X_HANDLE || "").replace(/^@/, ""),
+    githubUsername: process.env.GITHUB_USERNAME || "Darth-Hidious",
+    xHandle: (process.env.X_HANDLE || "siddharthayko").replace(/^@/, ""),
     siteUrl: process.env.SITE_URL || "http://localhost:3000",
     boardPassword: process.env.BOARD_PASSWORD || "change-me",
     sessionSecret:

@@ -21,6 +21,8 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000). Board login uses `BOARD_PASSWORD` (default `change-me`).
 
+Defaults are wired for **Tim the Enchanter** — GitHub [`Darth-Hidious`](https://github.com/Darth-Hidious), X [`@siddharthayko`](https://x.com/siddharthayko).
+
 ### Required env
 
 | Key | Purpose |
