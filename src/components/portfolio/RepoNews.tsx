@@ -1,4 +1,4 @@
-import type { RepoNote } from "@/lib/github-feed";
+import type { ProjectNote } from "@/lib/notes";
 
 function formatDate(iso: string): string {
   try {
@@ -12,16 +12,16 @@ function formatDate(iso: string): string {
   }
 }
 
-export function RepoNews({ notes }: { notes: RepoNote[] }) {
+export function RepoNews({ notes }: { notes: ProjectNote[] }) {
   if (notes.length === 0) return null;
 
   return (
     <section className="panel section" id="notes">
       <div className="section-head">
-        <h2>From the repos</h2>
+        <h2>Project notes</h2>
         <p>
-          Live notes pulled from GitHub READMEs — research writeups, tools, and
-          papers in progress.
+          Hand-written writeups for the main public repos — figures, claims, and
+          how to read each tree without drowning in README tables.
         </p>
       </div>
 

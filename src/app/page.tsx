@@ -4,14 +4,14 @@ import { listPublicFindings } from "@/lib/db";
 import { FindingsFeed } from "@/components/portfolio/FindingsFeed";
 import { RepoNews } from "@/components/portfolio/RepoNews";
 import { SiteHeader } from "@/components/portfolio/SiteHeader";
-import { getRepoNotes } from "@/lib/github-feed";
+import { getProjectNotes } from "@/lib/notes";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const config = getConfig();
   const findings = listPublicFindings();
-  const notes = await getRepoNotes();
+  const notes = await getProjectNotes();
   const github = githubProfileUrl(config.githubUsername);
   const x = xProfileUrl(config.xHandle);
   const linkedin =
