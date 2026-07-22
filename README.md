@@ -25,7 +25,10 @@ npm run dev
 
 Board password: `BOARD_PASSWORD` (default `change-me`).
 
-## Env
+## Security
+
+See [SECURITY.md](SECURITY.md). Board password lives in Vercel env — do not paste
+it into chat. Private repos never appear on the public homepage.
 
 | Key | Purpose |
 |-----|---------|

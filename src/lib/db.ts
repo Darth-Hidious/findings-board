@@ -17,6 +17,7 @@ export type UpsertFindingInput = {
   readmeExcerpt: string;
   mediaUrls: string[];
   whyPicked: string;
+  isPrivate?: boolean;
 };
 
 type StoreFile = {
@@ -50,6 +51,12 @@ function readStore(): StoreFile {
     const raw = fs.readFileSync(file, "utf8");
     const parsed = JSON.parse(raw) as StoreFile;
     if (!Array.isArray(parsed.findings)) return emptyStore();
+    parsed.findings = parsed.findings.map((f) => ({
+      ...f,
+      isPrivate: Boolean(f.isPrivate),
+      mediaUrls: Array.isArray(f.mediaUrls) ? f.mediaUrls : [],
+      threadJson: Array.isArray(f.threadJson) ? f.threadJson : [],
+    }));
     return parsed;
   } catch {
     const seeded = emptyStore();
@@ -95,6 +102,7 @@ function seedDemo(store: StoreFile) {
     ],
     postedThreadUrl: null,
     dryRun: false,
+    isPrivate: false,
     createdAt: ts,
     updatedAt: ts,
   });
@@ -118,6 +126,7 @@ export function upsertFinding(input: UpsertFindingInput): Finding {
     existing.readmeExcerpt = input.readmeExcerpt;
     existing.mediaUrls = input.mediaUrls;
     existing.whyPicked = input.whyPicked;
+    existing.isPrivate = Boolean(input.isPrivate);
     existing.updatedAt = ts;
     writeStore(store);
     return existing;
@@ -138,6 +147,7 @@ export function upsertFinding(input: UpsertFindingInput): Finding {
     threadJson: [],
     postedThreadUrl: null,
     dryRun: false,
+    isPrivate: Boolean(input.isPrivate),
     createdAt: ts,
     updatedAt: ts,
   };
@@ -154,8 +164,10 @@ export function listFindings(status?: FindingStatus): Finding[] {
 
 export function listPublicFindings(): Finding[] {
   return sortFindings(
-    readStore().findings.filter((f) =>
-      ["posted", "approved", "drafted"].includes(f.status),
+    readStore().findings.filter(
+      (f) =>
+        !f.isPrivate &&
+        ["posted", "approved", "drafted"].includes(f.status),
     ),
   ).slice(0, 24);
 }

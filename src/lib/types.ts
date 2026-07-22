@@ -28,6 +28,7 @@ export type Finding = {
   threadJson: ThreadTweet[];
   postedThreadUrl: string | null;
   dryRun: boolean;
+  isPrivate: boolean;
   createdAt: string;
   updatedAt: string;
 };

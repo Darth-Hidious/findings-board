@@ -25,9 +25,8 @@ export function getConfig(): AppConfig {
     githubUsername: process.env.GITHUB_USERNAME || "Darth-Hidious",
     xHandle: (process.env.X_HANDLE || "siddharthayko").replace(/^@/, ""),
     siteUrl: process.env.SITE_URL || "http://localhost:3000",
-    boardPassword: process.env.BOARD_PASSWORD || "change-me",
-    sessionSecret:
-      process.env.SESSION_SECRET || "dev-only-session-secret-change-me",
+    boardPassword: process.env.BOARD_PASSWORD || "",
+    sessionSecret: process.env.SESSION_SECRET || "",
     githubToken: process.env.GITHUB_TOKEN || undefined,
     xaiApiKey: process.env.XAI_API_KEY || undefined,
     xaiModel: process.env.XAI_MODEL || "grok-3-mini",

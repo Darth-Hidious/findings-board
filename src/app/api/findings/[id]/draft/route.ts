@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { isBoardAuthenticated } from "@/lib/auth";
+import { requireBoardMutation } from "@/lib/board-guard";
 import { getConfig } from "@/lib/config";
 import { getFinding, updateFindingThread, updateFindingStatus } from "@/lib/db";
 import { draftThread } from "@/lib/grok";
@@ -8,12 +8,14 @@ import type { VoiceMode } from "@/lib/types";
 
 type Params = { params: Promise<{ id: string }> };
 
+const VOICES = new Set<VoiceMode>(["dry", "dry_bones", "bones_forward"]);
+
 export async function POST(request: Request, { params }: Params) {
-  if (!(await isBoardAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = await requireBoardMutation(request);
+  if (denied) return denied;
+
   const { id } = await params;
-  const finding = getFinding(id);
+  const finding = getFinding(id.slice(0, 80));
   if (!finding) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
@@ -21,25 +23,35 @@ export async function POST(request: Request, { params }: Params) {
   const body = (await request.json().catch(() => ({}))) as {
     voice?: VoiceMode;
   };
-  const voice = body.voice || finding.voice || "dry_bones";
-  const drafted = await draftThread(finding, voice);
-  const updated = updateFindingThread(id, drafted.tweets, voice, "drafted");
+  const voice =
+    body.voice && VOICES.has(body.voice) ? body.voice : finding.voice || "dry_bones";
 
-  const config = getConfig();
-  let autoPostResult = null;
-  if (config.autoPost && updated) {
-    const posted = await postThread(updated.threadJson);
-    autoPostResult = posted;
-    updateFindingStatus(id, "posted", {
-      postedThreadUrl: posted.threadUrl,
-      dryRun: posted.dryRun,
+  try {
+    const drafted = await draftThread(finding, voice);
+    updateFindingThread(finding.id, drafted.tweets, voice, "drafted");
+
+    const config = getConfig();
+    let autoPost = null;
+    if (config.autoPost) {
+      const posted = await postThread(drafted.tweets);
+      autoPost = {
+        dryRun: posted.dryRun,
+        message: posted.message,
+        threadUrl: posted.threadUrl,
+      };
+      updateFindingStatus(finding.id, "posted", {
+        postedThreadUrl: posted.threadUrl,
+        dryRun: posted.dryRun,
+      });
+    }
+
+    return NextResponse.json({
+      finding: getFinding(finding.id),
+      usedFallback: drafted.usedFallback,
+      model: drafted.usedFallback ? undefined : drafted.model,
+      autoPost,
     });
+  } catch {
+    return NextResponse.json({ error: "Draft failed" }, { status: 500 });
   }
-
-  return NextResponse.json({
-    finding: getFinding(id),
-    usedFallback: drafted.usedFallback,
-    model: drafted.model,
-    autoPost: autoPostResult,
-  });
 }

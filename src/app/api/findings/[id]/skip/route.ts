@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { isBoardAuthenticated } from "@/lib/auth";
+import { requireBoardMutation } from "@/lib/board-guard";
 import { getFinding, updateFindingStatus } from "@/lib/db";
 
 type Params = { params: Promise<{ id: string }> };
 
-export async function POST(_request: Request, { params }: Params) {
-  if (!(await isBoardAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function POST(request: Request, { params }: Params) {
+  const denied = await requireBoardMutation(request);
+  if (denied) return denied;
+
   const { id } = await params;
-  if (!getFinding(id)) {
+  if (!getFinding(id.slice(0, 80))) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  const finding = updateFindingStatus(id, "skipped");
+  const finding = updateFindingStatus(id.slice(0, 80), "skipped");
   return NextResponse.json({ finding });
 }

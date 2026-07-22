@@ -49,9 +49,8 @@ access locked.
 
 CV PDF is available at `/cv.pdf` if you want to share details selectively.
 
-## This cloud agent cannot finish the Vercel click for you
+## Security notes
 
-There is no Vercel/GitHub login in this environment. After you push the repo (or
-paste a deploy hook / grant access), Vercel will build it. If you create an empty
-`findings-board` repo and add a deploy key or make it accessible to Cursor, we
-can push from here next.
+- Rotate secrets if they were ever shared in chat (see [SECURITY.md](SECURITY.md)).
+- Prefer a fine-grained GitHub PAT over a classic `repo` token.
+- Read `BOARD_PASSWORD` from the Vercel dashboard; do not paste it into chats.

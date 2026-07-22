@@ -13,8 +13,8 @@ export default async function BoardLoginPage() {
       <header className="site-header">
         <h1>Findings board — login</h1>
         <p className="meta">
-          Private posting desk. Password is <code>BOARD_PASSWORD</code> in
-          your environment file.
+          Private posting desk. Use the password from your Vercel env
+          (<code>BOARD_PASSWORD</code>). Do not share it in chat.
         </p>
         <nav>
           <Link href="/">Home</Link>

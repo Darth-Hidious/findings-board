@@ -1,12 +1,25 @@
 import { NextResponse } from "next/server";
-import { isBoardAuthenticated } from "@/lib/auth";
+import { requireBoardMutation, requireBoardRead } from "@/lib/board-guard";
 import { listFindings, updateThreadTexts } from "@/lib/db";
 import type { FindingStatus, ThreadTweet } from "@/lib/types";
 
+function sanitizeThread(thread: ThreadTweet[]): ThreadTweet[] | null {
+  if (!Array.isArray(thread) || thread.length > 8) return null;
+  return thread.map((t) => ({
+    text: String(t.text || "").slice(0, 280),
+    altText: t.altText ? String(t.altText).slice(0, 400) : undefined,
+    mediaUrls: Array.isArray(t.mediaUrls)
+      ? t.mediaUrls
+          .filter((u) => typeof u === "string" && /^https:\/\//i.test(u))
+          .slice(0, 4)
+      : undefined,
+  }));
+}
+
 export async function GET(request: Request) {
-  if (!(await isBoardAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = await requireBoardRead();
+  if (denied) return denied;
+
   const { searchParams } = new URL(request.url);
   const status = searchParams.get("status") as FindingStatus | null;
   const findings = listFindings(status || undefined);
@@ -14,17 +27,21 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  if (!(await isBoardAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-  const body = (await request.json()) as {
+  const denied = await requireBoardMutation(request);
+  if (denied) return denied;
+
+  const body = (await request.json().catch(() => null)) as {
     id?: string;
     thread?: ThreadTweet[];
-  };
-  if (!body.id || !Array.isArray(body.thread)) {
+  } | null;
+  if (!body?.id || typeof body.id !== "string") {
     return NextResponse.json({ error: "id and thread required" }, { status: 400 });
   }
-  const finding = updateThreadTexts(body.id, body.thread);
+  const thread = sanitizeThread(body.thread || []);
+  if (!thread) {
+    return NextResponse.json({ error: "Invalid thread" }, { status: 400 });
+  }
+  const finding = updateThreadTexts(body.id.slice(0, 80), thread);
   if (!finding) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }

@@ -33,14 +33,16 @@ export async function postThread(
   }
 
   if (!hasXCredentials(config)) {
-    console.info("[dry-run] X thread payload", JSON.stringify(cleaned, null, 2));
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[dry-run] X thread tweet count", cleaned.length);
+    }
     return {
       dryRun: true,
       threadUrl: dryRunUrl(config),
       tweetIds: cleaned.map((_, i) => `dry-${i + 1}`),
       payload: cleaned,
       message:
-        "Dry-run: X API keys missing. Thread logged server-side and marked posted locally.",
+        "Dry-run: X API keys missing. Thread marked posted locally; nothing sent to X.",
     };
   }
 

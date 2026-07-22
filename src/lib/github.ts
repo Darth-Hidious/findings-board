@@ -254,6 +254,7 @@ export async function ingestFromGitHub(
           readmeExcerpt: excerpt,
           mediaUrls: marker.media?.length ? marker.media : media,
           whyPicked: `Explicitly marked in findings.json${privacyNote}`,
+          isPrivate: Boolean(repo.private),
         });
       });
       continue;
@@ -283,6 +284,7 @@ export async function ingestFromGitHub(
         media.length > 0
           ? `Found ${media.length} media file(s)${privacyNote}`
           : `Recent repo with readable README/description${privacyNote}`,
+      isPrivate: Boolean(repo.private),
     });
   }
 
