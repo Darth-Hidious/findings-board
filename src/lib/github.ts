@@ -25,7 +25,59 @@ type GhContent = {
 };
 
 const MEDIA_EXT = /\.(png|jpe?g|gif|webp|mp4|webm|mov)$/i;
-const MEDIA_DIRS = ["media", "assets", "demos", "demo", "screenshots", "images"];
+const MEDIA_DIRS = ["media", "assets", "demos", "demo", "screenshots", "images", "docs/assets"];
+
+const SKIP_REPOS = new Set([
+  "findings-board",
+  "rando6969",
+  "hero-geometric",
+  "marc27-docs",
+  "bimo-tech-website",
+]);
+
+function firstReadmeImage(
+  readme: string,
+  fullName: string,
+  branch: string,
+): string | null {
+  const md = readme.match(/!\[[^\]]*\]\(([^)]+)\)/);
+  const html = readme.match(/<img[^>]+src=["']([^"']+)["']/i);
+  const raw = md?.[1] || html?.[1];
+  if (!raw) return null;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  const cleaned = raw.replace(/^\.?\//, "");
+  return `https://raw.githubusercontent.com/${fullName}/${branch}/${cleaned}`;
+}
+
+function titleFromReadme(readme: string, fallback: string): string {
+  const h = readme.match(/^#{1,2}\s+(.+)$/m);
+  if (h?.[1]) {
+    return h[1]
+      .replace(/[*_`]/g, "")
+      .replace(/\[[^\]]*\]\([^)]+\)/g, "")
+      .trim()
+      .slice(0, 100);
+  }
+  const htmlH = readme.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i);
+  if (htmlH?.[1]) {
+    return htmlH[1].replace(/<[^>]+>/g, "").trim().slice(0, 100);
+  }
+  return fallback;
+}
+
+function smartExcerpt(readme: string, description: string): string {
+  const tldr = readme.match(/##\s*TL;DR\s*\n+([\s\S]*?)(?:\n##|\n#|$)/i);
+  if (tldr?.[1]) {
+    return excerptFromReadme(tldr[1]).slice(0, 360);
+  }
+  const blockquote = readme.match(/^>\s*(.+)$/m);
+  if (blockquote?.[1] && blockquote[1].length > 40) {
+    return excerptFromReadme(blockquote[1]).slice(0, 360);
+  }
+  const fromReadme = excerptFromReadme(readme);
+  if (fromReadme.length > 60) return fromReadme.slice(0, 420);
+  return description || fromReadme;
+}
 
 async function ghFetch(url: string, token?: string): Promise<Response> {
   const headers: Record<string, string> = {
@@ -50,7 +102,7 @@ async function fetchReadme(
   if (!data.content) return "";
   try {
     const raw = Buffer.from(data.content, "base64").toString("utf8");
-    return raw.slice(0, 1800);
+    return raw.slice(0, 6000);
   } catch {
     return "";
   }
@@ -213,7 +265,7 @@ export async function ingestFromGitHub(
       privateIncluded: false,
       findings: [],
       warning:
-        "Set GITHUB_USERNAME in .env to ingest repos. Demo finding remains available.",
+        "Set GITHUB_USERNAME in .env to ingest repos.",
     };
   }
 
@@ -231,19 +283,30 @@ export async function ingestFromGitHub(
   }
 
   const collected: UpsertFindingInput[] = [];
+  const usable = repos.filter((r) => !SKIP_REPOS.has(r.name));
 
-  for (const repo of repos.slice(0, 12)) {
+  for (const repo of usable.slice(0, 12)) {
     const readme = await fetchReadme(repo.full_name, token);
     const media = await collectMedia(repo.full_name, repo.default_branch, token);
+    const readmeImage = firstReadmeImage(
+      readme,
+      repo.full_name,
+      repo.default_branch,
+    );
+    const mediaUrls = [
+      ...(readmeImage ? [readmeImage] : []),
+      ...media.filter((u) => u !== readmeImage),
+    ].slice(0, 6);
     const markers = await fetchFindingsMarker(repo.full_name, token);
-    const excerpt = excerptFromReadme(readme);
+    const excerpt = smartExcerpt(readme, repo.description || "");
     const privacyNote = repo.private ? " (private)" : "";
+    const title = titleFromReadme(readme, repo.name);
 
     if (markers && markers.length > 0) {
       markers.forEach((marker, index) => {
         collected.push({
           sourceKey: `gh:${repo.full_name}:finding:${index}`,
-          title: marker.title || `${repo.name} finding`,
+          title: marker.title || title,
           summary:
             marker.summary ||
             repo.description ||
@@ -252,16 +315,17 @@ export async function ingestFromGitHub(
           repoFullName: repo.full_name,
           repoUrl: repo.html_url,
           readmeExcerpt: excerpt,
-          mediaUrls: marker.media?.length ? marker.media : media,
-          whyPicked: `Explicitly marked in findings.json${privacyNote}`,
+          mediaUrls: marker.media?.length ? marker.media : mediaUrls,
+          whyPicked: `Marked in findings.json${privacyNote}`,
           isPrivate: Boolean(repo.private),
+          language: repo.language,
         });
       });
       continue;
     }
 
     const interesting =
-      media.length > 0 ||
+      mediaUrls.length > 0 ||
       Boolean(repo.description) ||
       excerpt.length > 40 ||
       repo.stargazers_count > 0 ||
@@ -271,20 +335,17 @@ export async function ingestFromGitHub(
 
     collected.push({
       sourceKey: `gh:${repo.full_name}:repo`,
-      title: repo.name,
-      summary:
-        repo.description ||
-        excerpt ||
-        `${repo.language || "Project"} updated ${repo.pushed_at.slice(0, 10)}`,
+      title,
+      summary: repo.description || excerpt,
       repoFullName: repo.full_name,
       repoUrl: repo.html_url,
       readmeExcerpt: excerpt,
-      mediaUrls: media,
-      whyPicked:
-        media.length > 0
-          ? `Found ${media.length} media file(s)${privacyNote}`
-          : `Recent repo with readable README/description${privacyNote}`,
+      mediaUrls,
+      whyPicked: mediaUrls.length
+        ? `README / media from ${repo.name}${privacyNote}`
+        : `Updated ${repo.pushed_at.slice(0, 10)}${privacyNote}`,
       isPrivate: Boolean(repo.private),
+      language: repo.language,
     });
   }
 

@@ -29,6 +29,7 @@ export type Finding = {
   postedThreadUrl: string | null;
   dryRun: boolean;
   isPrivate: boolean;
+  language: string | null;
   createdAt: string;
   updatedAt: string;
 };

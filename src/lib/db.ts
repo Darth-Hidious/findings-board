@@ -18,6 +18,7 @@ export type UpsertFindingInput = {
   mediaUrls: string[];
   whyPicked: string;
   isPrivate?: boolean;
+  language?: string | null;
 };
 
 type StoreFile = {
@@ -50,20 +51,19 @@ function readStore(): StoreFile {
     const raw = fs.readFileSync(file, "utf8");
     const parsed = JSON.parse(raw) as StoreFile;
     if (!Array.isArray(parsed.findings)) return emptyStore();
+    const before = parsed.findings.length;
     const cleaned = parsed.findings
       .filter((f) => !String(f.sourceKey || "").startsWith("demo:"))
       .map((f) => ({
         ...f,
         isPrivate: Boolean(f.isPrivate),
+        language: f.language ?? null,
         mediaUrls: Array.isArray(f.mediaUrls) ? f.mediaUrls : [],
         threadJson: Array.isArray(f.threadJson) ? f.threadJson : [],
       }));
-    if (cleaned.length !== parsed.findings.length) {
-      const next = { findings: cleaned };
-      writeStore(next);
-      return next;
-    }
-    return { findings: cleaned };
+    const next = { findings: cleaned };
+    if (cleaned.length !== before) writeStore(next);
+    return next;
   } catch {
     return emptyStore();
   }
@@ -94,6 +94,7 @@ export function upsertFinding(input: UpsertFindingInput): Finding {
     existing.mediaUrls = input.mediaUrls;
     existing.whyPicked = input.whyPicked;
     existing.isPrivate = Boolean(input.isPrivate);
+    existing.language = input.language ?? existing.language ?? null;
     existing.updatedAt = ts;
     writeStore(store);
     return existing;
@@ -115,6 +116,7 @@ export function upsertFinding(input: UpsertFindingInput): Finding {
     postedThreadUrl: null,
     dryRun: false,
     isPrivate: Boolean(input.isPrivate),
+    language: input.language ?? null,
     createdAt: ts,
     updatedAt: ts,
   };

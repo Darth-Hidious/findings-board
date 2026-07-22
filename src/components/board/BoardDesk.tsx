@@ -2,18 +2,44 @@
 
 import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
-import type { Finding, ThreadTweet, VoiceMode } from "@/lib/types";
+import type { Finding, FindingStatus, ThreadTweet, VoiceMode } from "@/lib/types";
 
-const VOICES: { id: VoiceMode; label: string }[] = [
-  { id: "dry", label: "Dry" },
-  { id: "dry_bones", label: "Dry + Bones" },
-  { id: "bones_forward", label: "Bones-forward" },
+const VOICES: { id: VoiceMode; label: string; hint: string }[] = [
+  { id: "dry", label: "Dry", hint: "Facts only" },
+  { id: "dry_bones", label: "Dry + Bones", hint: "Facts, then a layered joke" },
+  { id: "bones_forward", label: "Bones-forward", hint: "Joke leads, still grounded" },
 ];
+
+type Filter = "queue" | "ready" | "posted" | "all";
+
+function statusLabel(status: FindingStatus): string {
+  switch (status) {
+    case "new":
+      return "Needs draft";
+    case "drafted":
+      return "Ready to edit";
+    case "approved":
+      return "Approved";
+    case "posted":
+      return "Posted";
+    case "skipped":
+      return "Skipped";
+    default:
+      return status;
+  }
+}
+
+function charTone(n: number): string {
+  if (n > 280) return "over";
+  if (n > 240) return "warn";
+  return "ok";
+}
 
 export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
   const [findings, setFindings] = useState(initialFindings);
   const [selectedId, setSelectedId] = useState(initialFindings[0]?.id || "");
   const [voice, setVoice] = useState<VoiceMode>("dry_bones");
+  const [filter, setFilter] = useState<Filter>("queue");
   const [message, setMessage] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -23,6 +49,34 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
   );
 
   const thread = selected?.threadJson || [];
+
+  const counts = useMemo(() => {
+    const queue = findings.filter((f) =>
+      ["new", "drafted", "approved"].includes(f.status),
+    ).length;
+    const ready = findings.filter(
+      (f) => f.status === "drafted" && f.threadJson.length > 0,
+    ).length;
+    const posted = findings.filter((f) => f.status === "posted").length;
+    return { queue, ready, posted, all: findings.length };
+  }, [findings]);
+
+  const visible = useMemo(() => {
+    if (filter === "queue") {
+      return findings.filter((f) =>
+        ["new", "drafted", "approved"].includes(f.status),
+      );
+    }
+    if (filter === "ready") {
+      return findings.filter(
+        (f) => f.status === "drafted" && f.threadJson.length > 0,
+      );
+    }
+    if (filter === "posted") {
+      return findings.filter((f) => f.status === "posted");
+    }
+    return findings;
+  }, [findings, filter]);
 
   function replaceFinding(next: Finding) {
     setFindings((prev) => {
@@ -63,6 +117,18 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
     replaceFinding({ ...selected, threadJson: nextThread });
   }
 
+  function moveTweet(index: number, dir: -1 | 1) {
+    if (!selected) return;
+    const j = index + dir;
+    if (j < 0 || j >= thread.length) return;
+    const next = [...thread];
+    const tmp = next[index]!;
+    next[index] = next[j]!;
+    next[j] = tmp;
+    replaceFinding({ ...selected, threadJson: next });
+    void saveThread(next);
+  }
+
   async function saveThread(nextThread: ThreadTweet[]) {
     if (!selected) return;
     const res = await fetch("/api/findings", {
@@ -76,7 +142,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
   }
 
   async function ingest() {
-    setMessage("Ingesting GitHub…");
+    setMessage("Pulling repos from GitHub…");
     startTransition(async () => {
       const res = await fetch("/api/ingest", {
         method: "POST",
@@ -85,27 +151,36 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
         credentials: "same-origin",
       });
       const data = await res.json();
-      const listRes = await fetch("/api/findings", { credentials: "same-origin" });
+      const listRes = await fetch("/api/findings", {
+        credentials: "same-origin",
+      });
       const listData = await listRes.json();
       if (listData.findings) {
         setFindings(listData.findings);
-        if (!selectedId && listData.findings[0]) {
-          setSelectedId(listData.findings[0].id);
+        const firstNew =
+          listData.findings.find((f: Finding) => f.status === "new") ||
+          listData.findings[0];
+        if (firstNew) {
+          setSelectedId(firstNew.id);
+          setVoice(firstNew.voice || "dry_bones");
+          setFilter("queue");
         }
       }
       setMessage(
-        data.warning
-          ? `${data.warning}${data.privateIncluded ? " (private repos included)" : ""}`
-          : `Scanned ${data.scanned} repos; upserted ${data.upserted}${
-              data.privateIncluded ? "; private repos included" : ""
-            }.`,
+        data.error
+          ? data.error
+          : data.warning
+            ? data.warning
+            : `Loaded ${data.upserted} items from ${data.scanned} repos${
+                data.privateIncluded ? " (incl. private)" : ""
+              }.`,
       );
     });
   }
 
   async function draft() {
     if (!selected) return;
-    setMessage("Drafting thread…");
+    setMessage("Writing thread…");
     startTransition(async () => {
       await saveThread(thread);
       const res = await fetch(`/api/findings/${selected.id}/draft`, {
@@ -117,16 +192,18 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
       const data = await res.json();
       if (data.finding) replaceFinding(data.finding);
       setMessage(
-        data.usedFallback
-          ? "Drafted with local fallback (no XAI_API_KEY or Grok error)."
-          : `Drafted with ${data.model || "Grok"}.`,
+        data.error
+          ? data.error
+          : data.usedFallback
+            ? "Drafted offline (add XAI_API_KEY for Grok)."
+            : `Draft ready (${data.model || "Grok"}).`,
       );
     });
   }
 
   async function approve() {
     if (!selected) return;
-    setMessage("Approving and posting…");
+    setMessage("Posting thread…");
     startTransition(async () => {
       const res = await fetch(`/api/findings/${selected.id}/approve`, {
         method: "POST",
@@ -136,7 +213,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
       });
       const data = await res.json();
       if (data.finding) replaceFinding(data.finding);
-      setMessage(data.post?.message || "Posted.");
+      setMessage(data.post?.message || data.error || "Posted.");
     });
   }
 
@@ -165,195 +242,309 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
     window.location.href = "/board/login";
   }
 
-  const inbox = findings.filter((f) =>
-    ["new", "drafted", "approved"].includes(f.status),
-  );
-  const history = findings.filter((f) =>
-    ["posted", "skipped"].includes(f.status),
-  );
+  const noteSlug = selected?.repoFullName.split("/")[1]?.toLowerCase();
 
   return (
     <div className="page page-wide">
       <div className="board-shell">
-      <header className="site-header">
-        <h1>Findings board</h1>
-        <p className="meta">
-          Private desk. Draft dry threads with jokes that have a second floor.
-          Approve once to post.
-        </p>
-        <nav>
-          <Link href="/">Home</Link>
-          <button type="button" className="btn" onClick={ingest} disabled={pending}>
-            Ingest GitHub
-          </button>
-          <button type="button" className="btn" onClick={logout}>
-            Log out
-          </button>
-        </nav>
-      </header>
-      <hr />
-
-      <div className="board-layout">
-        <aside>
-          <h2>Inbox</h2>
-          <div className="inbox">
-            {inbox.map((f) => (
-              <button
-                key={f.id}
-                type="button"
-                className={selected?.id === f.id ? "active" : ""}
-                onClick={() => {
-                  setSelectedId(f.id);
-                  setVoice(f.voice);
-                }}
-              >
-                {f.title}
-                <br />
-                <span className="meta">
-                  {f.status} · {f.repoFullName || "local"}
-                </span>
-              </button>
-            ))}
-            {inbox.length === 0 && <p className="muted">Inbox clear.</p>}
+        <header className="board-top">
+          <div>
+            <p className="eyebrow">Private desk</p>
+            <h1>Thread board</h1>
+            <p className="meta">
+              Pull real repo writeups, draft a short thread, approve to post.
+            </p>
           </div>
+          <div className="btn-row board-top-actions">
+            <Link className="btn" href="/">
+              Site
+            </Link>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={ingest}
+              disabled={pending}
+            >
+              Sync GitHub
+            </button>
+            <button type="button" className="btn" onClick={logout}>
+              Log out
+            </button>
+          </div>
+        </header>
 
-          <h2>History</h2>
-          <ul className="history-list">
-            {history.slice(0, 10).map((f) => (
-              <li key={f.id}>
+        <div className="board-stats">
+          <button
+            type="button"
+            className={`stat-chip ${filter === "queue" ? "active" : ""}`}
+            onClick={() => setFilter("queue")}
+          >
+            Queue <strong>{counts.queue}</strong>
+          </button>
+          <button
+            type="button"
+            className={`stat-chip ${filter === "ready" ? "active" : ""}`}
+            onClick={() => setFilter("ready")}
+          >
+            Ready <strong>{counts.ready}</strong>
+          </button>
+          <button
+            type="button"
+            className={`stat-chip ${filter === "posted" ? "active" : ""}`}
+            onClick={() => setFilter("posted")}
+          >
+            Posted <strong>{counts.posted}</strong>
+          </button>
+          <button
+            type="button"
+            className={`stat-chip ${filter === "all" ? "active" : ""}`}
+            onClick={() => setFilter("all")}
+          >
+            All <strong>{counts.all}</strong>
+          </button>
+        </div>
+
+        <div className="board-layout">
+          <aside>
+            <div className="inbox">
+              {visible.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={`inbox-card ${selected?.id === f.id ? "active" : ""}`}
+                  onClick={() => {
+                    setSelectedId(f.id);
+                    setVoice(f.voice || "dry_bones");
+                  }}
+                >
+                  {f.mediaUrls[0] && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={f.mediaUrls[0]} alt="" className="inbox-thumb" />
+                  )}
+                  <span className="inbox-card-body">
+                    <span className={`status-pill status-${f.status}`}>
+                      {statusLabel(f.status)}
+                      {f.isPrivate ? " · private" : ""}
+                    </span>
+                    <span className="inbox-title">{f.title}</span>
+                    <span className="meta">
+                      {f.language ? `${f.language} · ` : ""}
+                      {f.repoFullName || "local"}
+                    </span>
+                  </span>
+                </button>
+              ))}
+              {visible.length === 0 && (
+                <p className="muted">
+                  Nothing here. Hit <strong>Sync GitHub</strong> to load repos.
+                </p>
+              )}
+            </div>
+          </aside>
+
+          <section className="board-main">
+            {!selected ? (
+              <div className="empty-desk">
+                <h2>No item selected</h2>
+                <p className="muted">
+                  Sync GitHub to pull README-backed findings from your repos,
+                  then draft a thread.
+                </p>
                 <button
                   type="button"
-                  className="btn"
-                  onClick={() => setSelectedId(f.id)}
+                  className="btn btn-primary"
+                  onClick={ingest}
+                  disabled={pending}
                 >
-                  {f.title} ({f.status}
-                  {f.dryRun ? ", dry" : ""})
+                  Sync GitHub
                 </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
+              </div>
+            ) : (
+              <>
+                <div className="desk-hero">
+                  {selected.mediaUrls[0] && (
+                    <div className="media-frame desk-cover">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={selected.mediaUrls[0]} alt="" />
+                    </div>
+                  )}
+                  <div>
+                    <span className={`status-pill status-${selected.status}`}>
+                      {statusLabel(selected.status)}
+                    </span>
+                    <h2>{selected.title}</h2>
+                    <p>{selected.summary}</p>
+                    <p className="meta">
+                      <a
+                        href={selected.repoUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {selected.repoFullName}
+                      </a>
+                      {noteSlug && (
+                        <>
+                          {" · "}
+                          <Link href={`/notes/${noteSlug}`}>site note</Link>
+                        </>
+                      )}
+                      {selected.postedThreadUrl && (
+                        <>
+                          {" · "}
+                          <a
+                            href={selected.postedThreadUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            live thread
+                          </a>
+                        </>
+                      )}
+                    </p>
+                  </div>
+                </div>
 
-        <section>
-          {!selected ? (
-            <p className="muted">
-              Inbox is empty. Ingest GitHub when you want drafts from real
-              repos — nothing is faked here.
-            </p>
-          ) : (
-            <>
-              <h2>{selected.title}</h2>
-              <p className="meta">{selected.whyPicked}</p>
-              <p>{selected.summary}</p>
-              <p>
-                <a href={selected.repoUrl} target="_blank" rel="noreferrer">
-                  {selected.repoFullName || selected.repoUrl}
-                </a>
-                {selected.postedThreadUrl && (
-                  <>
-                    {" · "}
-                    <a
-                      href={selected.postedThreadUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      live thread
-                    </a>
-                  </>
+                {selected.readmeExcerpt && (
+                  <details className="source-panel" open>
+                    <summary>Source material</summary>
+                    <p className="meta">{selected.whyPicked}</p>
+                    <p className="source-excerpt">{selected.readmeExcerpt}</p>
+                  </details>
                 )}
-              </p>
-              {selected.mediaUrls[0] && (
-                <div className="media-frame">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={selected.mediaUrls[0]} alt="" />
-                </div>
-              )}
 
-              <h2>Voice</h2>
-              <div className="btn-row">
-                {VOICES.map((v) => (
-                  <button
-                    key={v.id}
-                    type="button"
-                    className={`btn ${voice === v.id ? "btn-primary" : ""}`}
-                    onClick={() => setVoice(v.id)}
-                  >
-                    {v.label}
-                  </button>
-                ))}
-              </div>
-
-              <h2>Thread draft</h2>
-              <p>
-                <button type="button" className="btn" onClick={addTweet}>
-                  Add tweet
-                </button>
-              </p>
-
-              {thread.length === 0 ? (
-                <p className="muted">No draft yet. Press Regenerate.</p>
-              ) : (
-                <ol className="thread-list">
-                  {thread.map((tweet, index) => (
-                    <li key={`${selected.id}-tweet-${index}`}>
-                      <p className="meta">
-                        {index + 1}/{thread.length}{" "}
+                <div className="composer">
+                  <div className="composer-head">
+                    <h3>Thread</h3>
+                    <div className="voice-row">
+                      {VOICES.map((v) => (
                         <button
+                          key={v.id}
                           type="button"
-                          className="btn"
-                          onClick={() => removeTweet(index)}
+                          title={v.hint}
+                          className={`voice-chip ${voice === v.id ? "active" : ""}`}
+                          onClick={() => setVoice(v.id)}
                         >
-                          Remove
+                          {v.label}
                         </button>
-                      </p>
-                      <textarea
-                        className="field"
-                        rows={4}
-                        value={tweet.text}
-                        onChange={(e) => updateTweet(index, e.target.value)}
-                        onBlur={(e) => commitTweet(index, e.target.value)}
-                        maxLength={280}
-                        enterKeyHint="done"
-                      />
-                      <p className="meta">{tweet.text.length}/280</p>
-                    </li>
-                  ))}
-                </ol>
-              )}
+                      ))}
+                    </div>
+                  </div>
 
-              <div className="board-actions">
-                <div className="btn-row">
-                  <button
-                    type="button"
-                    className="btn"
-                    onClick={draft}
-                    disabled={pending}
-                  >
-                    Regenerate
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={approve}
-                    disabled={pending || thread.length === 0}
-                  >
-                    Approve &amp; post
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={skip}
-                    disabled={pending}
-                  >
-                    Skip
-                  </button>
+                  {thread.length === 0 ? (
+                    <div className="empty-draft">
+                      <p className="muted">
+                        No draft yet. Generate a thread from the source
+                        material.
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={draft}
+                        disabled={pending}
+                      >
+                        Draft thread
+                      </button>
+                    </div>
+                  ) : (
+                    <ol className="tweet-stack">
+                      {thread.map((tweet, index) => (
+                        <li key={`${selected.id}-tweet-${index}`}>
+                          <div className="tweet-toolbar">
+                            <span className="meta">
+                              {index + 1} / {thread.length}
+                            </span>
+                            <div className="tweet-tools">
+                              <button
+                                type="button"
+                                className="tool-btn"
+                                onClick={() => moveTweet(index, -1)}
+                                disabled={index === 0}
+                              >
+                                Up
+                              </button>
+                              <button
+                                type="button"
+                                className="tool-btn"
+                                onClick={() => moveTweet(index, 1)}
+                                disabled={index === thread.length - 1}
+                              >
+                                Down
+                              </button>
+                              <button
+                                type="button"
+                                className="tool-btn"
+                                onClick={() => removeTweet(index)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                          <textarea
+                            className="field"
+                            rows={3}
+                            value={tweet.text}
+                            onChange={(e) =>
+                              updateTweet(index, e.target.value)
+                            }
+                            onBlur={(e) => commitTweet(index, e.target.value)}
+                            maxLength={280}
+                            placeholder="Tweet text…"
+                          />
+                          <div
+                            className={`char-meter ${charTone(tweet.text.length)}`}
+                          >
+                            <span
+                              style={{
+                                width: `${Math.min(100, (tweet.text.length / 280) * 100)}%`,
+                              }}
+                            />
+                            <em>{tweet.text.length}/280</em>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+
+                  <div className="composer-footer">
+                    <button type="button" className="btn" onClick={addTweet}>
+                      Add tweet
+                    </button>
+                  </div>
                 </div>
-                {message && <p className="meta">{message}</p>}
-              </div>
-            </>
-          )}
-        </section>
-      </div>
+
+                <div className="board-actions">
+                  <div className="btn-row">
+                    <button
+                      type="button"
+                      className="btn"
+                      onClick={draft}
+                      disabled={pending}
+                    >
+                      {thread.length ? "Regenerate" : "Draft thread"}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-primary"
+                      onClick={approve}
+                      disabled={pending || thread.length === 0}
+                    >
+                      Approve &amp; post
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={skip}
+                      disabled={pending}
+                    >
+                      Skip
+                    </button>
+                  </div>
+                  {message && <p className="meta board-msg">{message}</p>}
+                </div>
+              </>
+            )}
+          </section>
+        </div>
       </div>
     </div>
   );
