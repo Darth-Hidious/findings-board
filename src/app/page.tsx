@@ -61,8 +61,7 @@ export default function HomePage() {
           </p>
           <p className="muted">
             {config.siteTagline} Most of the serious output lives in
-            repositories. This site is the public index; the private board drafts
-            threads when something is ready to ship.
+            repositories. This page is the public index.
           </p>
         </section>
 

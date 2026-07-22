@@ -43,25 +43,29 @@ function readStore(): StoreFile {
   const file = storePath();
   try {
     if (!fs.existsSync(file)) {
-      const seeded = emptyStore();
-      seedDemo(seeded);
-      writeStore(seeded);
-      return seeded;
+      const empty = emptyStore();
+      writeStore(empty);
+      return empty;
     }
     const raw = fs.readFileSync(file, "utf8");
     const parsed = JSON.parse(raw) as StoreFile;
     if (!Array.isArray(parsed.findings)) return emptyStore();
-    parsed.findings = parsed.findings.map((f) => ({
-      ...f,
-      isPrivate: Boolean(f.isPrivate),
-      mediaUrls: Array.isArray(f.mediaUrls) ? f.mediaUrls : [],
-      threadJson: Array.isArray(f.threadJson) ? f.threadJson : [],
-    }));
-    return parsed;
+    const cleaned = parsed.findings
+      .filter((f) => !String(f.sourceKey || "").startsWith("demo:"))
+      .map((f) => ({
+        ...f,
+        isPrivate: Boolean(f.isPrivate),
+        mediaUrls: Array.isArray(f.mediaUrls) ? f.mediaUrls : [],
+        threadJson: Array.isArray(f.threadJson) ? f.threadJson : [],
+      }));
+    if (cleaned.length !== parsed.findings.length) {
+      const next = { findings: cleaned };
+      writeStore(next);
+      return next;
+    }
+    return { findings: cleaned };
   } catch {
-    const seeded = emptyStore();
-    seedDemo(seeded);
-    return seeded;
+    return emptyStore();
   }
 }
 
@@ -69,43 +73,6 @@ function writeStore(store: StoreFile) {
   const file = storePath();
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, JSON.stringify(store, null, 2));
-}
-
-function seedDemo(store: StoreFile) {
-  if (store.findings.length > 0) return;
-  const ts = nowIso();
-  store.findings.push({
-    id: randomUUID(),
-    sourceKey: "demo:findings-board",
-    title: "Findings Board bootstrap",
-    summary:
-      "Local demo finding so the board works before GitHub keys are wired.",
-    repoFullName: "local/findings-board",
-    repoUrl: "https://github.com/Darth-Hidious",
-    readmeExcerpt:
-      "Portfolio + private posting desk. Draft dry threads with bones. Approve to post.",
-    mediaUrls: [],
-    whyPicked: "Seeded so you can see the desk before ingest runs.",
-    status: "drafted",
-    voice: "dry_bones",
-    threadJson: [
-      {
-        text: "Built a tiny ingest that turns GitHub work into thread drafts. No launch. Just the pipeline.",
-      },
-      {
-        text: "It pulls README scraps + demos, then waits for a human to approve. Autoflow with a brake pedal.",
-      },
-      {
-        text: "The jokes are supposed to have a second floor. If you only notice the first one, you're reading too fast.",
-      },
-      { text: "https://github.com/Darth-Hidious" },
-    ],
-    postedThreadUrl: null,
-    dryRun: false,
-    isPrivate: false,
-    createdAt: ts,
-    updatedAt: ts,
-  });
 }
 
 function sortFindings(findings: Finding[]): Finding[] {
@@ -167,7 +134,9 @@ export function listPublicFindings(): Finding[] {
     readStore().findings.filter(
       (f) =>
         !f.isPrivate &&
-        ["posted", "approved", "drafted"].includes(f.status),
+        !String(f.sourceKey || "").startsWith("demo:") &&
+        f.status === "posted" &&
+        !f.dryRun,
     ),
   ).slice(0, 24);
 }

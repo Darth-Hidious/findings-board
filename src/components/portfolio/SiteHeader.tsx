@@ -12,7 +12,6 @@ export function SiteHeader() {
         <nav className="top-nav" aria-label="Primary">
           <a href="#about">About</a>
           <a href="#work">Work</a>
-          <a href="#findings">Findings</a>
           <a href="/cv.pdf" target="_blank" rel="noreferrer">
             CV
           </a>

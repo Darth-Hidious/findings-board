@@ -236,7 +236,10 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
 
         <section>
           {!selected ? (
-            <p>No findings yet. Run Ingest GitHub.</p>
+            <p className="muted">
+              Inbox is empty. Ingest GitHub when you want drafts from real
+              repos — nothing is faked here.
+            </p>
           ) : (
             <>
               <h2>{selected.title}</h2>
