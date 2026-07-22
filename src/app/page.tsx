@@ -22,12 +22,11 @@ export default async function HomePage() {
       <SiteHeader />
       <main className="shell">
         <section className="panel hero">
-          <p className="eyebrow">CV / portfolio</p>
+          <p className="eyebrow">Notes &amp; public work</p>
           <h1>{config.siteName}</h1>
           <p className="lede">
-            Technical lead working across autonomous R&amp;D, advanced
-            materials, and aerospace systems — funded programs, consortia, and
-            prototypes that ship into institutions.
+            Materials tooling, spoof-resilient navigation, and aerospace-adjacent
+            systems — with public writeups where the work can actually be shown.
           </p>
           <div className="hero-actions">
             <a
@@ -49,11 +48,40 @@ export default async function HomePage() {
             </a>
           </div>
           <div className="pill-row">
-            <span className="pill">AI / materials</span>
-            <span className="pill">Aerospace</span>
+            <span className="pill">Materials tooling</span>
             <span className="pill">Navigation</span>
+            <span className="pill">Aerospace</span>
             <span className="pill">THM · 2027</span>
           </div>
+        </section>
+
+        <section className="panel section" id="now">
+          <div className="section-head">
+            <h2>Now</h2>
+            <p>What I’m actually building.</p>
+          </div>
+          <p>
+            Working on{" "}
+            <a
+              href="https://github.com/Darth-Hidious/PRISM"
+              target="_blank"
+              rel="noreferrer"
+            >
+              PRISM
+            </a>
+            — a public Rust CLI / agent shell for materials discovery workflows
+            (knowledge graph, compute backends, research mesh). Program-side
+            detail stays off this site; the installable tool is what’s public.{" "}
+            <Link href="/notes/prism">Note</Link>
+            {" · "}
+            <a
+              href="https://github.com/Darth-Hidious/PRISM"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+          </p>
         </section>
 
         <RepoNews notes={notes} />
@@ -64,22 +92,18 @@ export default async function HomePage() {
             <p>Focus areas, without hype.</p>
           </div>
           <p>
-            I lead work in autonomous discovery, extreme-temperature propulsion
-            materials, and spoof-resilient navigation. The common thread is
-            taking hard technical ideas into funded, partnered programs.
+            I care about autonomous materials tooling and navigation that still
+            works when sensors lie. Public artifacts live here and on GitHub;
+            partner / national program material does not.
           </p>
         </section>
 
         <section className="panel section" id="impact">
           <div className="section-head">
-            <h2>Selected impact</h2>
-            <p>Recent markers from programs and recognition.</p>
+            <h2>Selected markers</h2>
+            <p>Public recognition only — not a program dump.</p>
           </div>
           <ul className="impact-grid">
-            <li className="impact-item">
-              <strong>2 ESA prime projects</strong>
-              <span>Secured and led under Bimo Tech consortia</span>
-            </li>
             <li className="impact-item">
               <strong>EIC Seal of Excellence</strong>
               <span>Horizon Europe / EIC Pre-Accelerator, 2026</span>
@@ -92,43 +116,26 @@ export default async function HomePage() {
               <strong>StartMiUp winner</strong>
               <span>Hackathon MVP · Abicor Binzel challenge</span>
             </li>
+            <li className="impact-item">
+              <strong>IEEE</strong>
+              <span>Member</span>
+            </li>
           </ul>
         </section>
 
         <section className="panel section" id="work">
           <div className="section-head">
-            <h2>Selected work</h2>
-            <p>Programs and public technical work.</p>
+            <h2>Public technical work</h2>
+            <p>Things with repos, papers, or notes you can open.</p>
           </div>
           <ul className="work-list">
             <li>
-              <h3>Autonomous material discovery</h3>
-              <p className="work-meta">ESA / NASA framework · PRISM</p>
-              <p>
-                Agentic closed-loop discovery for extreme-temperature space
-                materials.{" "}
-                <a
-                  href="https://github.com/Darth-Hidious/PRISM"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  PRISM
-                </a>
-              </p>
-            </li>
-            <li>
-              <h3>Project SPARK</h3>
-              <p className="work-meta">ESA · ArianeGroup · IPPT PAN</p>
-              <p>
-                Extreme-temperature alloys for next-generation space propulsion.
-              </p>
-            </li>
-            <li>
               <h3>KC-UKF / spoof-resilient navigation</h3>
-              <p className="work-meta">NAVICON 2026</p>
+              <p className="work-meta">Paper + code on GitHub · NAVICON 2026</p>
               <p>
-                Kinematic compatibility-field UKF for GNSS/INS under adversarial
-                degradation.{" "}
+                Compatibility-field UKF for multi-sensor fusion under adversarial
+                degradation — report, verification ledger, and KITTI navigation
+                package.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/kc-ukf"
                   target="_blank"
@@ -138,19 +145,54 @@ export default async function HomePage() {
                 </a>
                 {" · "}
                 <a
+                  href="https://github.com/Darth-Hidious/kc-ukf/blob/main/paper/KC-UKF_Research_Report.pdf"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  paper PDF
+                </a>
+                {" · "}
+                <a
+                  href="https://doi.org/10.5281/zenodo.19506045"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Zenodo
+                </a>
+                {" · "}
+                <a
                   href="https://github.com/Darth-Hidious/kc-ukf-nav"
                   target="_blank"
                   rel="noreferrer"
                 >
                   kc-ukf-nav
                 </a>
+                {" · "}
+                <Link href="/notes/kc-ukf-nav">note</Link>
+              </p>
+            </li>
+            <li>
+              <h3>PRISM (public tool)</h3>
+              <p className="work-meta">Current focus · open-source CLI</p>
+              <p>
+                Materials agent / CLI — what’s public is the binary and docs, not
+                partner program writeups.{" "}
+                <a
+                  href="https://github.com/Darth-Hidious/PRISM"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  GitHub
+                </a>
+                {" · "}
+                <Link href="/notes/prism">note</Link>
               </p>
             </li>
             <li>
               <h3>Lunar metallurgy analysis</h3>
-              <p className="work-meta">WAMS 2026 · ESA ESTEC</p>
+              <p className="work-meta">WAMS 2026 · public pipeline</p>
               <p>
-                Terrane-aware lunar metallurgy framework.{" "}
+                Terrane-aware lunar metallurgy analysis stack.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/wams2026-lunar-metallurgy"
                   target="_blank"
@@ -158,14 +200,24 @@ export default async function HomePage() {
                 >
                   repository
                 </a>
+                {" · "}
+                <Link href="/notes/wams2026-lunar-metallurgy">note</Link>
               </p>
             </li>
             <li>
-              <h3>Differentiable ML modeling</h3>
-              <p className="work-meta">EIC Pre-Accelerator · Fraunhofer</p>
+              <h3>Vingilot Mk01</h3>
+              <p className="work-meta">Code-CAD</p>
               <p>
-                Differentiable models for complex fluid / pool dynamics; EIC Seal
-                of Excellence.
+                Modular CadQuery → STEP → Onshape workflow for a VTOL airframe.{" "}
+                <a
+                  href="https://github.com/Darth-Hidious/Vingilot.mk01.manta"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  repository
+                </a>
+                {" · "}
+                <Link href="/notes/vingilot">note</Link>
               </p>
             </li>
           </ul>
