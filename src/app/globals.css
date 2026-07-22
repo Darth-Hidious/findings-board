@@ -17,15 +17,15 @@
   --pad: max(1rem, env(safe-area-inset-left));
   --pad-r: max(1rem, env(safe-area-inset-right));
   --pad-b: max(1.5rem, env(safe-area-inset-bottom));
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-google-sans), "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-google-sans-code), "Google Sans Code", ui-monospace, monospace;
 }
 
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--ink);
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-sans: var(--font-google-sans), "Google Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-google-sans-code), "Google Sans Code", ui-monospace, monospace;
 }
 
 * {

@@ -1,8 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import { Google_Sans, Google_Sans_Code } from "next/font/google";
 import { getConfig } from "@/lib/config";
 import "./globals.css";
+
+const googleSans = Google_Sans({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-google-sans",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
+
+const googleSansCode = Google_Sans_Code({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-google-sans-code",
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
+});
 
 const config = getConfig();
 
@@ -27,9 +40,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full`}
+      className={`${googleSans.variable} ${googleSansCode.variable} h-full`}
     >
-      <body className={`${GeistSans.className} min-h-full antialiased`}>
+      <body className={`${googleSans.className} min-h-full antialiased`}>
         {children}
       </body>
     </html>
