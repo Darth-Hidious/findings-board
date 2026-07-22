@@ -20,7 +20,7 @@ but the portfolio itself does not need that.
 | Variable | Value |
 |----------|--------|
 | `SITE_NAME` | `Siddhartha Yash Kovid` |
-| `SITE_TAGLINE` | `Cool findings. Typed, not hyped.` |
+| `SITE_TAGLINE` | `Materials software, spoof-resilient navigation, aerospace systems.` |
 | `GITHUB_USERNAME` | `Darth-Hidious` |
 | `X_HANDLE` | `siddharthayko` |
 | `SITE_URL` | your Vercel / custom domain |

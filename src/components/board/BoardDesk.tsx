@@ -249,10 +249,9 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
       <div className="board-shell">
         <header className="board-top">
           <div>
-            <p className="eyebrow">Private desk</p>
-            <h1>Thread board</h1>
+            <h1>Board</h1>
             <p className="meta">
-              Pull real repo writeups, draft a short thread, approve to post.
+              Sync repos, draft a thread, approve to post.
             </p>
           </div>
           <div className="btn-row board-top-actions">
@@ -347,8 +346,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
               <div className="empty-desk">
                 <h2>No item selected</h2>
                 <p className="muted">
-                  Sync GitHub to pull README-backed findings from your repos,
-                  then draft a thread.
+                  Sync GitHub, pick a finding, draft a thread.
                 </p>
                 <button
                   type="button"

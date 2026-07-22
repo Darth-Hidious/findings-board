@@ -1,34 +1,34 @@
 ---
-title: KC-UKF research report — multi-sensor fusion under adversarial degradation
+title: KC-UKF research report
 repo: Darth-Hidious/kc-ukf
 slug: kc-ukf
-excerpt: Report and verification suite for Compatibility-Field UKF. Strong on acute spoofing; weaker where model mismatch or chronic noise dominate.
+excerpt: Report and verification suite for Compatibility-Field UKF. Strong on acute spoofing; weaker on model mismatch and chronic noise.
 image: https://raw.githubusercontent.com/Darth-Hidious/kc-ukf-nav/main/figures/fig_kitti_scenarios.png
 date: 2026-04-10
 order: 3
 language: Python
 ---
 
-This repository is the research report, Monte Carlo harness, and evidence ledger behind KC-UKF. The navigation-focused JAX package and KITTI figures live in [kc-ukf-nav](/notes/kc-ukf-nav); this tree is where the paper claims, baselines, and verification audits sit.
+Research report, Monte Carlo harness, and verification ledger for KC-UKF. The JAX / KITTI navigation package is in [kc-ukf-nav](/notes/kc-ukf-nav).
 
-![Five-condition stress view used across the KC-UKF line of work](https://raw.githubusercontent.com/Darth-Hidious/kc-ukf-nav/main/figures/fig_kitti_scenarios.png)
+![Five-condition stress view](https://raw.githubusercontent.com/Darth-Hidious/kc-ukf-nav/main/figures/fig_kitti_scenarios.png)
 
-## TL;DR without the badges
+## Results
 
-CFE turns per-sensor health (NIS through Gaussian kernels) into a softmax trust distribution that modulates measurement noise inside the UKF update. On Scenario A — evasive UAV with acute adversarial attacks — KC-UKF lands around **7.54 m** position RMSE across 100 Monte Carlo trials, roughly a 20–37% improvement over seven baselines with Holm–Bonferroni corrected significance.
+CFE turns per-sensor NIS (through Gaussian kernels) into a softmax trust distribution that modulates measurement noise in the UKF update.
 
-The report is also explicit about where it does *not* win:
+Scenario A — evasive UAV, acute adversarial attacks — about **7.54 m** position RMSE over 100 Monte Carlo trials, roughly 20–37% better than seven baselines (Holm–Bonferroni corrected).
 
-- Ballistic re-entry: model mismatch dominates; KC-UKF ranks behind IMM-UKF.
-- Urban low-slow-small tracking: chronic degradation favors Sage–Husa-style adaptation.
-- Maritime cross-domain: the architecture generalizes once CFE widths and base weights are re-tuned (MCMC), not when UAV defaults are cargo-culted across domains.
+Where it loses:
 
-Point of the package is a reproducible comparison, not one cherry-picked plot.
+- Ballistic re-entry: model mismatch; behind IMM-UKF
+- Urban low-slow-small: chronic degradation; Sage–Husa wins
+- Maritime: only after MCMC retune of CFE widths / weights — UAV defaults do not transfer
 
-## What you get in the tree
+## Repo contents
 
-- **Paper** — XeLaTeX report (PDF built in CI) plus CFE algorithm supplement.
-- **Code** — KC-UKF core, AF/SH/Huber/WI/IMM baselines, scenario runners, maritime MCMC, figure generators.
-- **Verification** — claim ledger (`T2_claims.csv`), SymPy equation audit, claim-to-code pairing, raw stdout of numerical reruns.
+- **Paper** — XeLaTeX report (CI PDF) + CFE supplement
+- **Code** — KC-UKF, baselines (AF/SH/Huber/WI/IMM), scenario runners, maritime MCMC, figures
+- **Verification** — claim ledger, SymPy audit, claim-to-code pairing, rerun logs
 
-If you only want the spoof-resilient GNSS/INS story on real KITTI, start with the [kc-ukf-nav note](/notes/kc-ukf-nav). If you want the broader multi-scenario report and the audit trail, this is the source of record ([Zenodo](https://doi.org/10.5281/zenodo.19506045)).
+KITTI GNSS/INS writeup: [kc-ukf-nav](/notes/kc-ukf-nav). Archival record: [Zenodo](https://doi.org/10.5281/zenodo.19506045).
