@@ -2,13 +2,16 @@ import Link from "next/link";
 import { getConfig, githubProfileUrl, xProfileUrl } from "@/lib/config";
 import { listPublicFindings } from "@/lib/db";
 import { FindingsFeed } from "@/components/portfolio/FindingsFeed";
+import { RepoNews } from "@/components/portfolio/RepoNews";
 import { SiteHeader } from "@/components/portfolio/SiteHeader";
+import { getRepoNotes } from "@/lib/github-feed";
 
 export const dynamic = "force-dynamic";
 
-export default function HomePage() {
+export default async function HomePage() {
   const config = getConfig();
   const findings = listPublicFindings();
+  const notes = await getRepoNotes();
   const github = githubProfileUrl(config.githubUsername);
   const x = xProfileUrl(config.xHandle);
   const linkedin =
@@ -52,6 +55,8 @@ export default function HomePage() {
             <span className="pill">THM · 2027</span>
           </div>
         </section>
+
+        <RepoNews notes={notes} />
 
         <section className="panel section" id="about">
           <div className="section-head">
