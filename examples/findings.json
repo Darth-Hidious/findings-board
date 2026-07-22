@@ -1,0 +1,9 @@
+{
+  "findings": [
+    {
+      "title": "Example finding",
+      "summary": "Put this file at the root of a public repo to force the board to draft a thread about a specific thing.",
+      "media": []
+    }
+  ]
+}
