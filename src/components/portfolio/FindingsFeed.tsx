@@ -13,8 +13,7 @@ export function FindingsFeed({
   return (
     <section className="panel section" id="findings">
       <div className="section-head">
-        <h2>Notes from the work</h2>
-        <p>Short public threads about real projects — when there is something worth saying.</p>
+        <h2>Threads</h2>
       </div>
 
       <ul className="findings-list">

@@ -18,11 +18,7 @@ export function RepoNews({ notes }: { notes: ProjectNote[] }) {
   return (
     <section className="panel section" id="notes">
       <div className="section-head">
-        <h2>Project notes</h2>
-        <p>
-          Hand-written writeups for the main public repos — figures, claims, and
-          how to read each tree without drowning in README tables.
-        </p>
+        <h2>Notes</h2>
       </div>
 
       <ul className="news-list">

@@ -2,7 +2,7 @@
 title: KC-UKF research report — multi-sensor fusion under adversarial degradation
 repo: Darth-Hidious/kc-ukf
 slug: kc-ukf
-excerpt: Companion report and verification suite for Compatibility-Field UKF. Honest wins on acute spoofing, honest losses where model mismatch or chronic noise dominate — plus the code and claim ledger that back the numbers.
+excerpt: Report and verification suite for Compatibility-Field UKF. Strong on acute spoofing; weaker where model mismatch or chronic noise dominate.
 image: https://raw.githubusercontent.com/Darth-Hidious/kc-ukf-nav/main/figures/fig_kitti_scenarios.png
 date: 2026-04-10
 order: 3
@@ -23,7 +23,7 @@ The report is also explicit about where it does *not* win:
 - Urban low-slow-small tracking: chronic degradation favors Sage–Husa-style adaptation.
 - Maritime cross-domain: the architecture generalizes once CFE widths and base weights are re-tuned (MCMC), not when UAV defaults are cargo-culted across domains.
 
-That honesty is intentional. The point of the package is a reproducible comparison, not a single cherry-picked plot.
+Point of the package is a reproducible comparison, not one cherry-picked plot.
 
 ## What you get in the tree
 
