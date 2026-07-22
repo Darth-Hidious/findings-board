@@ -2,7 +2,7 @@
 title: Vingilot Mk01 — modular Code-CAD for a VTOL airframe
 repo: Darth-Hidious/Vingilot.mk01.manta
 slug: vingilot
-excerpt: CadQuery modules for fuselage, wing, nacelle, and empennage, parameterized in millimeters and pushed as STEP into Onshape — aircraft geometry as code, not a one-off CAD session.
+excerpt: CadQuery modules for fuselage, wing, nacelle, and empennage — params in mm, STEP out, optional Onshape upload.
 image: /notes/vingilot-modules.svg
 date: 2026-02-15
 order: 5
@@ -15,7 +15,7 @@ Vingilot Mk01 is a modular Code-CAD workflow for a VTOL airframe: CadQuery build
 
 ## Layout
 
-The repo is organized the way you actually touch the airplane:
+The repo layout matches the airframe:
 
 - **fuselage** — main body module
 - **wing** — flying-wing surfaces
@@ -44,4 +44,4 @@ Dependencies are deliberately small: CadQuery, the Onshape client, and `python-d
 
 ## Why it is here
 
-Aerospace prototypes die in unnamed SolidWorks features. Vingilot is the opposite bet: parameters and assemblies that can be rebuilt, diffed, and handed to a manufacturing or CFD step without reconstructing the model from memory.
+Aircraft geometry as CadQuery modules you can rebuild and diff.

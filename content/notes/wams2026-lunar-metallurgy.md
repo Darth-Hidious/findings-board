@@ -40,6 +40,6 @@ You do not need to parse every CSV to get the story:
 
 Data provenance for LP-GRS is documented under `data/DATA_SOURCES.md` (NASA PDS Geosciences; Prettyman et al. 2006).
 
-## Why it matters here
+## Note
 
-This is the public analysis spine for the WAMS 26 / ESA ESTEC talk: not a pitch deck, but the reproducible path from orbital chemistry to terrane-aware metallurgy choices.
+Public analysis code for the WAMS 26 / ESA ESTEC paper.

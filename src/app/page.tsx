@@ -22,11 +22,10 @@ export default async function HomePage() {
       <SiteHeader />
       <main className="shell">
         <section className="panel hero">
-          <p className="eyebrow">Notes &amp; public work</p>
           <h1>{config.siteName}</h1>
           <p className="lede">
-            Materials tooling, spoof-resilient navigation, and aerospace-adjacent
-            systems — with public writeups where the work can actually be shown.
+            Materials software, spoof-resilient navigation, aerospace systems.
+            Technical lead on two ESA projects.
           </p>
           <div className="hero-actions">
             <a
@@ -48,7 +47,7 @@ export default async function HomePage() {
             </a>
           </div>
           <div className="pill-row">
-            <span className="pill">Materials tooling</span>
+            <span className="pill">Materials</span>
             <span className="pill">Navigation</span>
             <span className="pill">Aerospace</span>
             <span className="pill">THM · 2027</span>
@@ -58,10 +57,9 @@ export default async function HomePage() {
         <section className="panel section" id="now">
           <div className="section-head">
             <h2>Now</h2>
-            <p>What I’m actually building.</p>
           </div>
           <p>
-            Working on{" "}
+            Building{" "}
             <a
               href="https://github.com/Darth-Hidious/PRISM"
               target="_blank"
@@ -69,9 +67,8 @@ export default async function HomePage() {
             >
               PRISM
             </a>
-            — a public Rust CLI / agent shell for materials discovery workflows
-            (knowledge graph, compute backends, research mesh). Program-side
-            detail stays off this site; the installable tool is what’s public.{" "}
+            , a Rust CLI for materials discovery (knowledge graph, compute,
+            mesh).{" "}
             <Link href="/notes/prism">Note</Link>
             {" · "}
             <a
@@ -89,24 +86,19 @@ export default async function HomePage() {
         <section className="panel section" id="about">
           <div className="section-head">
             <h2>About</h2>
-            <p>Focus areas, without hype.</p>
           </div>
           <p>
-            I care about autonomous materials tooling and navigation that still
-            works when sensors lie. Public artifacts live here and on GitHub;
-            partner / national program material does not.
+            I build materials software and navigation filters for spoofed GNSS.
           </p>
         </section>
 
         <section className="panel section" id="impact">
           <div className="section-head">
-            <h2>Selected markers</h2>
-            <p>Public recognition only — not a program dump.</p>
+            <h2>Recognition</h2>
           </div>
           <ul className="impact-grid">
             <li className="impact-item">
               <strong>Technical lead · 2 ESA projects</strong>
-              <span>Program detail stays off this site</span>
             </li>
             <li className="impact-item">
               <strong>EIC Seal of Excellence</strong>
@@ -125,17 +117,15 @@ export default async function HomePage() {
 
         <section className="panel section" id="work">
           <div className="section-head">
-            <h2>Public technical work</h2>
-            <p>Things with repos, papers, or notes you can open.</p>
+            <h2>Work</h2>
           </div>
           <ul className="work-list">
             <li>
-              <h3>KC-UKF / spoof-resilient navigation</h3>
-              <p className="work-meta">Paper + code on GitHub · NAVICON 2026</p>
+              <h3>KC-UKF</h3>
+              <p className="work-meta">NAVICON 2026</p>
               <p>
-                Compatibility-field UKF for multi-sensor fusion under adversarial
-                degradation — report, verification ledger, and KITTI navigation
-                package.{" "}
+                UKF with cross-sensor trust for GNSS/INS under spoofing. Report,
+                verification suite, KITTI package.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/kc-ukf"
                   target="_blank"
@@ -172,11 +162,10 @@ export default async function HomePage() {
               </p>
             </li>
             <li>
-              <h3>PRISM (public tool)</h3>
-              <p className="work-meta">Current focus · open-source CLI</p>
+              <h3>PRISM</h3>
+              <p className="work-meta">Current</p>
               <p>
-                Materials agent / CLI — what’s public is the binary and docs, not
-                partner program writeups.{" "}
+                Materials agent / CLI.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/PRISM"
                   target="_blank"
@@ -189,16 +178,16 @@ export default async function HomePage() {
               </p>
             </li>
             <li>
-              <h3>Lunar metallurgy analysis</h3>
-              <p className="work-meta">WAMS 2026 · public pipeline</p>
+              <h3>Lunar metallurgy</h3>
+              <p className="work-meta">WAMS 2026</p>
               <p>
-                Terrane-aware lunar metallurgy analysis stack.{" "}
+                Analysis pipeline for the WAMS paper.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/wams2026-lunar-metallurgy"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  repository
+                  repo
                 </a>
                 {" · "}
                 <Link href="/notes/wams2026-lunar-metallurgy">note</Link>
@@ -208,13 +197,13 @@ export default async function HomePage() {
               <h3>Vingilot Mk01</h3>
               <p className="work-meta">Code-CAD</p>
               <p>
-                Modular CadQuery → STEP → Onshape workflow for a VTOL airframe.{" "}
+                CadQuery modules → STEP → Onshape for a VTOL airframe.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/Vingilot.mk01.manta"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  repository
+                  repo
                 </a>
                 {" · "}
                 <Link href="/notes/vingilot">note</Link>
@@ -225,7 +214,7 @@ export default async function HomePage() {
 
         <section className="panel section" id="credentials">
           <div className="section-head">
-            <h2>Education &amp; credentials</h2>
+            <h2>Education</h2>
           </div>
           <div className="creds">
             <div className="cred">
@@ -246,7 +235,7 @@ export default async function HomePage() {
             </div>
           </div>
           <p className="meta" style={{ marginTop: "1rem" }}>
-            Full CV: <a href="/cv.pdf">cv.pdf</a>
+            CV: <a href="/cv.pdf">cv.pdf</a>
           </p>
         </section>
 
