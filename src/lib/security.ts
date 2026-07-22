@@ -83,6 +83,10 @@ export function isAllowedOrigin(request: Request): boolean {
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "https://findings-board.vercel.app",
+    "https://siddharthayashkovid.com",
+    "https://www.siddharthayashkovid.com",
+    "https://darth-hidious.com",
+    "https://www.darth-hidious.com",
   ]) {
     if (!raw) continue;
     try {
