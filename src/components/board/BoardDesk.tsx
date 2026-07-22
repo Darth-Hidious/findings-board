@@ -69,6 +69,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: selected.id, thread: nextThread }),
+      credentials: "same-origin",
     });
     const data = await res.json();
     if (data.finding) replaceFinding(data.finding);
@@ -77,9 +78,14 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
   async function ingest() {
     setMessage("Ingesting GitHub…");
     startTransition(async () => {
-      const res = await fetch("/api/ingest", { method: "POST" });
+      const res = await fetch("/api/ingest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+        credentials: "same-origin",
+      });
       const data = await res.json();
-      const listRes = await fetch("/api/findings");
+      const listRes = await fetch("/api/findings", { credentials: "same-origin" });
       const listData = await listRes.json();
       if (listData.findings) {
         setFindings(listData.findings);
@@ -106,6 +112,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voice }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (data.finding) replaceFinding(data.finding);
@@ -125,6 +132,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ thread }),
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (data.finding) replaceFinding(data.finding);
@@ -137,6 +145,9 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
     startTransition(async () => {
       const res = await fetch(`/api/findings/${selected.id}/skip`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+        credentials: "same-origin",
       });
       const data = await res.json();
       if (data.finding) replaceFinding(data.finding);
@@ -162,7 +173,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
   );
 
   return (
-    <div className="page" style={{ maxWidth: "56rem" }}>
+    <div className="page page-wide">
       <header className="site-header">
         <h1>Findings board</h1>
         <p className="meta">
@@ -206,7 +217,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
           </div>
 
           <h2>History</h2>
-          <ul>
+          <ul className="history-list">
             {history.slice(0, 10).map((f) => (
               <li key={f.id}>
                 <button
@@ -255,7 +266,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
               )}
 
               <h2>Voice</h2>
-              <p>
+              <div className="btn-row">
                 {VOICES.map((v) => (
                   <button
                     key={v.id}
@@ -266,7 +277,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
                     {v.label}
                   </button>
                 ))}
-              </p>
+              </div>
 
               <h2>Thread draft</h2>
               <p>
@@ -298,6 +309,7 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
                         onChange={(e) => updateTweet(index, e.target.value)}
                         onBlur={(e) => commitTweet(index, e.target.value)}
                         maxLength={280}
+                        enterKeyHint="done"
                       />
                       <p className="meta">{tweet.text.length}/280</p>
                     </li>
@@ -305,33 +317,35 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
                 </ol>
               )}
 
-              <p>
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={draft}
-                  disabled={pending}
-                >
-                  Regenerate
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={approve}
-                  disabled={pending || thread.length === 0}
-                >
-                  Approve &amp; post
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={skip}
-                  disabled={pending}
-                >
-                  Skip
-                </button>
-              </p>
-              {message && <p className="meta">{message}</p>}
+              <div className="board-actions">
+                <div className="btn-row">
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={draft}
+                    disabled={pending}
+                  >
+                    Regenerate
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={approve}
+                    disabled={pending || thread.length === 0}
+                  >
+                    Approve &amp; post
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={skip}
+                    disabled={pending}
+                  >
+                    Skip
+                  </button>
+                </div>
+                {message && <p className="meta">{message}</p>}
+              </div>
             </>
           )}
         </section>

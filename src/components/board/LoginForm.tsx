@@ -22,7 +22,12 @@ export function LoginForm() {
     });
     setLoading(false);
     if (!res.ok) {
-      setError("Wrong password.");
+      const data = await res.json().catch(() => ({}));
+      setError(
+        res.status === 429
+          ? "Too many attempts. Wait a bit."
+          : data.error || "Wrong password.",
+      );
       return;
     }
     router.replace("/board");
@@ -38,6 +43,10 @@ export function LoginForm() {
           id="password"
           className="field"
           type="password"
+          name="password"
+          autoComplete="current-password"
+          inputMode="text"
+          enterKeyHint="go"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           autoFocus
@@ -45,14 +54,14 @@ export function LoginForm() {
         />
       </p>
       {error && <p style={{ color: "var(--warn)" }}>{error}</p>}
-      <p>
+      <div className="btn-row">
         <button className="btn btn-primary" type="submit" disabled={loading}>
           {loading ? "Opening…" : "Enter board"}
-        </button>{" "}
+        </button>
         <Link className="btn" href="/">
           Back
         </Link>
-      </p>
+      </div>
     </form>
   );
 }
