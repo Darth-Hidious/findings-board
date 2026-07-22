@@ -1,65 +1,57 @@
-# Hosting plan
+# Hosting on Vercel
 
-Right now this app is **not on the public internet**. It only exists in this
-workspace / on your machine when you run `npm run dev`.
+Yes — this app is set up for **Vercel**.
 
-## What the app is
+SQLite was removed. Findings now use a JSON store (`data/findings.json` locally,
+`/tmp/findings-board.json` on Vercel). That is enough for a personal board.
+Cold starts may reset `/tmp`; for durable drafts later you can wire Turso/Blob,
+but the portfolio itself does not need that.
 
-One Next.js site with two faces:
+## Deploy (you already have Vercel + Darth-Hidious)
 
-1. **Public portfolio** (`/`) — somber personal page: who you are, selected
-   engineering work from GitHub, and a findings list.
-2. **Private posting board** (`/board`) — password-gated desk that ingests
-   GitHub, drafts X threads (Grok), and posts (or dry-runs) them.
+1. Create a GitHub repo under **Darth-Hidious** (e.g. `findings-board` or your
+   existing portfolio repo).
+2. Push this project to that repo.
+3. In Vercel → **Add New Project** → import that repo (or reconnect if it is
+   already linked).
+4. Framework: Next.js. Build: `npm run build`. Output: default.
+5. Add environment variables (Project → Settings → Environment Variables):
 
-Same database for both. No marketing chrome.
+| Variable | Value |
+|----------|--------|
+| `SITE_NAME` | `Siddhartha Yash Kovid` |
+| `SITE_TAGLINE` | `Cool findings. Typed, not hyped.` |
+| `GITHUB_USERNAME` | `Darth-Hidious` |
+| `X_HANDLE` | `siddharthayko` |
+| `SITE_URL` | your Vercel / custom domain |
+| `BOARD_PASSWORD` | strong password |
+| `SESSION_SECRET` | long random string |
+| `GITHUB_TOKEN` | PAT with `repo` scope (needed for **private** repos) |
+| `XAI_API_KEY` | optional, for Grok drafts |
+| `X_API_KEY` / `X_API_SECRET` / `X_ACCESS_TOKEN` / `X_ACCESS_SECRET` | optional live posting |
 
-## Where to host it (recommended)
+6. Deploy. Your existing custom domain can be attached under Domains.
 
-### Railway (best fit for this app)
+## Private repos
 
-Why: the board uses **SQLite on disk** (`data/findings.db`). Railway runs a
-normal Node server (`next start`) with a persistent volume, so drafts survive
-restarts. Vercel serverless does **not** keep a local SQLite file.
+Without `GITHUB_TOKEN`, ingest only sees **public** repos.
 
-Steps (about 15 minutes):
+With a fine-grained or classic PAT (`repo` read), ingest calls `/user/repos` and
+includes private owner repos. The **public homepage does not list private repo
+names** unless you approve a finding that already exposes them — keep board
+access locked.
 
-1. Push this repo to GitHub under `Darth-Hidious` (new repo, e.g. `findings-board`).
-2. Create a project on [railway.app](https://railway.app) → Deploy from that repo.
-3. Set start command: `npm run start` (build: `npm run build`).
-4. Add a **volume** mounted at `/app/data` (or set `cwd` so `./data` persists).
-5. Paste env vars from `.env.example` into Railway Variables:
-   - `SITE_NAME`, `GITHUB_USERNAME=Darth-Hidious`, `X_HANDLE=siddharthayko`
-   - `BOARD_PASSWORD`, `SESSION_SECRET` (long random string)
-   - `SITE_URL=https://your-railway-domain`
-   - optional: `XAI_API_KEY`, X API keys, `GITHUB_TOKEN`
-6. Generate a public domain in Railway. That URL is your portfolio.
+## What is not published on the site
 
-Custom domain later: `kovid.thm…` or whatever you own → CNAME to Railway.
+- City / street location
+- Phone number
+- Full mailing address
 
-### Alternatives
+CV PDF is available at `/cv.pdf` if you want to share details selectively.
 
-| Host | Verdict |
-|------|---------|
-| **Render** | Same idea as Railway (Web Service + disk). Also fine. |
-| **Vercel** | Easy for static Next pages, **bad** for SQLite board unless you rewrite storage to Turso. Skip for now. |
-| **GitHub Pages** | Static HTML only. Cannot run `/board` APIs. Not enough. |
+## This cloud agent cannot finish the Vercel click for you
 
-## Local preview (before hosting)
-
-```bash
-cp .env.example .env.local
-npm install
-npm run dev
-```
-
-Open http://localhost:3000 — portfolio.  
-Open http://localhost:3000/board/login — desk (password from env).
-
-## After it is live
-
-1. Log into `/board`, click **Ingest GitHub**.
-2. Draft / edit / **Approve & post** (dry-run until X keys exist).
-3. Posted findings show on the public home page.
-
-No separate “portfolio product” to buy. The homepage **is** the portfolio.
+There is no Vercel/GitHub login in this environment. After you push the repo (or
+paste a deploy hook / grant access), Vercel will build it. If you create an empty
+`findings-board` repo and add a deploy key or make it accessible to Cursor, we
+can push from here next.

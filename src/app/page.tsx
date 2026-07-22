@@ -16,18 +16,27 @@ export default function HomePage() {
       <header className="site-header">
         <h1>{config.siteName}</h1>
         <p className="meta">
-          Engineering student · Technische Hochschule Mittelhessen (THM),
-          Gießen
+          Technical lead · AI, aerospace &amp; materials systems
         </p>
         <nav>
           <a href="#about">About</a>
           <a href="#work">Work</a>
           <a href="#findings">Findings</a>
+          <a href="/cv.pdf" target="_blank" rel="noreferrer">
+            CV
+          </a>
           <a href={github} target="_blank" rel="noreferrer">
             GitHub
           </a>
           <a href={x} target="_blank" rel="noreferrer">
             X/@{config.xHandle}
+          </a>
+          <a
+            href="https://www.linkedin.com/in/siddhartha-yash-kovid-2688891a8/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
           </a>
           <Link href="/board">Posting board</Link>
         </nav>
@@ -38,19 +47,44 @@ export default function HomePage() {
       <section id="about">
         <h2>About</h2>
         <p>
-          I work on navigation, sensor fusion, and materials / ISRU-adjacent
-          analysis. Most of the serious output lives in public repositories.
-          This page is a quiet index of that work — not a product landing page.
+          Technical lead and founder working at the intersection of autonomous
+          R&amp;D, advanced materials, and aerospace systems. I build funded
+          programs, research consortia, and deployable AI prototypes from first
+          concept through institutional adoption.
+        </p>
+        <p>
+          Current focus: agentic materials discovery, extreme-temperature
+          propulsion materials, and spoof-resilient navigation / state
+          estimation.
         </p>
         <p className="muted">
-          {config.siteTagline} Threads get drafted on the private board, then
-          posted to X when they are ready.
+          {config.siteTagline} Serious output lives in repositories; this page
+          is a quiet index. Threads are drafted on the private board, then
+          posted when ready.
         </p>
       </section>
 
       <section id="work">
         <h2>Selected work</h2>
         <ul>
+          <li>
+            <strong>Autonomous material discovery</strong> — agentic,
+            closed-loop pipeline for extreme-temperature space materials (ESA /
+            NASA framework). Related public work:{" "}
+            <a
+              href="https://github.com/Darth-Hidious/PRISM"
+              target="_blank"
+              rel="noreferrer"
+            >
+              PRISM
+            </a>
+            .
+          </li>
+          <li>
+            <strong>Project SPARK</strong> — ESA-funded extreme-temperature
+            alloys for next-generation propulsion (consortium with ArianeGroup,
+            IPPT PAN).
+          </li>
           <li>
             <a
               href="https://github.com/Darth-Hidious/kc-ukf"
@@ -59,10 +93,7 @@ export default function HomePage() {
             >
               KC-UKF
             </a>{" "}
-            — kinematic compatibility-field UKF for multi-sensor fusion under
-            adversarial degradation (THM student research).
-          </li>
-          <li>
+            /{" "}
             <a
               href="https://github.com/Darth-Hidious/kc-ukf-nav"
               target="_blank"
@@ -70,8 +101,8 @@ export default function HomePage() {
             >
               kc-ukf-nav
             </a>{" "}
-            — spoof-resilient GNSS/INS navigation via cross-sensor trust
-            (IEEE NAVICON 2026 submission).
+            — kinematic compatibility-field UKF; spoof-resilient GNSS/INS
+            cross-sensor trust (NAVICON 2026).
           </li>
           <li>
             <a
@@ -79,27 +110,35 @@ export default function HomePage() {
               target="_blank"
               rel="noreferrer"
             >
-              wams2026-lunar-metallurgy
+              Lunar metallurgy analysis
             </a>{" "}
-            — terrane-aware lunar metallurgy analysis pipeline (WAMS 2026).
+            — terrane-aware framework; WAMS 26 invited talk at ESA ESTEC.
           </li>
           <li>
-            <a
-              href="https://github.com/Darth-Hidious/PRISM"
-              target="_blank"
-              rel="noreferrer"
-            >
-              PRISM
-            </a>{" "}
-            — AI-native autonomous materials discovery platform.
+            <strong>Differentiable ML modeling</strong> — Horizon Europe / EIC
+            Pre-Accelerator work with Fraunhofer; EIC Seal of Excellence, 2026.
           </li>
         </ul>
         <p className="meta">
-          Full list:{" "}
+          Public repositories:{" "}
           <a href={github} target="_blank" rel="noreferrer">
             github.com/{config.githubUsername}
           </a>
+          . Private program work is ingested on the board when a GitHub token is
+          configured — not listed here by default.
         </p>
+      </section>
+
+      <section id="notes">
+        <h2>Notes</h2>
+        <ul>
+          <li>B.Sc. Medical Engineering, THM — expected 2027.</li>
+          <li>MIT Professional Education — Applied AI &amp; Data Science (2026).</li>
+          <li>IEEE member.</li>
+          <li>
+            PDF curriculum vitae: <a href="/cv.pdf">cv.pdf</a>.
+          </li>
+        </ul>
       </section>
 
       <FindingsFeed findings={findings} xHandle={config.xHandle} />
@@ -107,8 +146,23 @@ export default function HomePage() {
       <hr />
       <footer className="meta">
         <p>
-          Contact via GitHub or X. Site source is this Findings Board app.
-          Hosted as described in <code>HOSTING.md</code>.
+          Contact via{" "}
+          <a href={github} target="_blank" rel="noreferrer">
+            GitHub
+          </a>
+          ,{" "}
+          <a href={x} target="_blank" rel="noreferrer">
+            X
+          </a>
+          , or{" "}
+          <a
+            href="https://www.linkedin.com/in/siddhartha-yash-kovid-2688891a8/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn
+          </a>
+          . No street address on this page.
         </p>
       </footer>
     </div>

@@ -1,19 +1,19 @@
 # Findings Board
 
-Somber personal site for an engineering student + a private X posting desk.
+Somber personal site + private X posting desk. Built for Vercel.
 
 ## What it is
 
-- **`/`** — Plain HTML-looking portfolio: name, THM Gießen, selected repos, findings.
-- **`/board`** — Password-gated desk: ingest GitHub → draft dry threads (Grok) → approve & post.
+- **`/`** — Plain academic portfolio from your CV (no city/phone on the page).
+- **`/board`** — Password desk: ingest GitHub (public + private with token) →
+  draft dry threads → approve & post.
+- **`/cv.pdf`** — CV download.
 
-Not a startup landing page. Times New Roman, paper background, blue links.
+## Host on Vercel
 
-## Hosting
-
-**Nothing is live yet.** See [HOSTING.md](HOSTING.md).
-
-Short version: push to GitHub → deploy on **Railway** (keeps SQLite) → set env vars → your URL is the portfolio.
+See [HOSTING.md](HOSTING.md). Short version: push to `Darth-Hidious` → import in
+Vercel → set env vars (especially `GITHUB_TOKEN` for private repos) → attach
+your existing domain.
 
 ## Local
 
@@ -23,28 +23,19 @@ npm install
 npm run dev
 ```
 
-- Portfolio: http://localhost:3000  
-- Board: http://localhost:3000/board/login (`BOARD_PASSWORD`, default `change-me`)
-
-Defaults: GitHub `Darth-Hidious`, X `@siddharthayko`.
+Board password: `BOARD_PASSWORD` (default `change-me`).
 
 ## Env
 
 | Key | Purpose |
 |-----|---------|
-| `SITE_NAME` | Portfolio heading |
-| `GITHUB_USERNAME` | Ingest source |
-| `X_HANDLE` | Profile / thread links |
-| `BOARD_PASSWORD` | Board gate |
-| `SESSION_SECRET` | Cookie signing |
-| `XAI_API_KEY` | Grok drafts (optional; fallback drafts exist) |
-| `X_API_*` | Live X posting (optional; dry-run without) |
-| `AUTO_POST` | `true` only after you trust the voice |
-
-## Mark a finding
-
-Put `examples/findings.json` (or the same shape) at a repo root as `findings.json`.
+| `GITHUB_USERNAME` | `Darth-Hidious` |
+| `GITHUB_TOKEN` | Include **private** repos in ingest |
+| `X_HANDLE` | `siddharthayko` |
+| `BOARD_PASSWORD` / `SESSION_SECRET` | Board auth |
+| `XAI_API_KEY` | Grok drafts |
+| `X_API_*` | Live X posting (else dry-run) |
 
 ## Scripts
 
-- `npm run dev` / `npm run build` / `npm run start` / `npm run lint`
+`npm run dev` · `npm run build` · `npm run start` · `npm run lint`

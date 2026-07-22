@@ -89,8 +89,10 @@ export function BoardDesk({ initialFindings }: { initialFindings: Finding[] }) {
       }
       setMessage(
         data.warning
-          ? data.warning
-          : `Scanned ${data.scanned} repos; upserted ${data.upserted}.`,
+          ? `${data.warning}${data.privateIncluded ? " (private repos included)" : ""}`
+          : `Scanned ${data.scanned} repos; upserted ${data.upserted}${
+              data.privateIncluded ? "; private repos included" : ""
+            }.`,
       );
     });
   }

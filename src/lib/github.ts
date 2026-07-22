@@ -13,6 +13,7 @@ type GhRepo = {
   language: string | null;
   stargazers_count: number;
   fork: boolean;
+  private: boolean;
 };
 
 type GhContent = {
@@ -87,7 +88,6 @@ async function collectMedia(
     }
   }
 
-  // Root-level demo.* media
   const root = await listDir(fullName, "", token);
   for (const entry of root) {
     if (
@@ -157,9 +157,48 @@ export type IngestResult = {
   username: string;
   scanned: number;
   upserted: number;
+  privateIncluded: boolean;
   findings: UpsertFindingInput[];
   warning?: string;
 };
+
+async function fetchRepos(
+  username: string,
+  token?: string,
+): Promise<{ repos: GhRepo[]; warning?: string; privateIncluded: boolean }> {
+  // With a token, list authenticated user's repos (includes private).
+  // Without, list public repos for the username.
+  if (token) {
+    const res = await ghFetch(
+      "https://api.github.com/user/repos?sort=pushed&per_page=30&affiliation=owner",
+      token,
+    );
+    if (!res.ok) {
+      const body = await res.text();
+      return {
+        repos: [],
+        privateIncluded: false,
+        warning: `GitHub API ${res.status}: ${body.slice(0, 200)}`,
+      };
+    }
+    const repos = ((await res.json()) as GhRepo[]).filter((r) => !r.fork);
+    return { repos, privateIncluded: repos.some((r) => r.private) };
+  }
+
+  const res = await ghFetch(
+    `https://api.github.com/users/${username}/repos?sort=pushed&per_page=12&type=owner`,
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    return {
+      repos: [],
+      privateIncluded: false,
+      warning: `GitHub API ${res.status}: ${body.slice(0, 200)}`,
+    };
+  }
+  const repos = ((await res.json()) as GhRepo[]).filter((r) => !r.fork);
+  return { repos, privateIncluded: false };
+}
 
 export async function ingestFromGitHub(
   usernameOverride?: string,
@@ -171,37 +210,34 @@ export async function ingestFromGitHub(
       username: "",
       scanned: 0,
       upserted: 0,
+      privateIncluded: false,
       findings: [],
       warning:
-        "Set GITHUB_USERNAME in .env to ingest public repos. Demo finding remains available.",
+        "Set GITHUB_USERNAME in .env to ingest repos. Demo finding remains available.",
     };
   }
 
   const token = config.githubToken;
-  const reposRes = await ghFetch(
-    `https://api.github.com/users/${username}/repos?sort=pushed&per_page=12&type=owner`,
-    token,
-  );
-
-  if (!reposRes.ok) {
-    const body = await reposRes.text();
+  const { repos, warning, privateIncluded } = await fetchRepos(username, token);
+  if (warning) {
     return {
       username,
       scanned: 0,
       upserted: 0,
+      privateIncluded: false,
       findings: [],
-      warning: `GitHub API ${reposRes.status}: ${body.slice(0, 200)}`,
+      warning,
     };
   }
 
-  const repos = ((await reposRes.json()) as GhRepo[]).filter((r) => !r.fork);
   const collected: UpsertFindingInput[] = [];
 
-  for (const repo of repos.slice(0, 8)) {
+  for (const repo of repos.slice(0, 12)) {
     const readme = await fetchReadme(repo.full_name, token);
     const media = await collectMedia(repo.full_name, repo.default_branch, token);
     const markers = await fetchFindingsMarker(repo.full_name, token);
     const excerpt = excerptFromReadme(readme);
+    const privacyNote = repo.private ? " (private)" : "";
 
     if (markers && markers.length > 0) {
       markers.forEach((marker, index) => {
@@ -217,7 +253,7 @@ export async function ingestFromGitHub(
           repoUrl: repo.html_url,
           readmeExcerpt: excerpt,
           mediaUrls: marker.media?.length ? marker.media : media,
-          whyPicked: "Explicitly marked in findings.json",
+          whyPicked: `Explicitly marked in findings.json${privacyNote}`,
         });
       });
       continue;
@@ -227,7 +263,8 @@ export async function ingestFromGitHub(
       media.length > 0 ||
       Boolean(repo.description) ||
       excerpt.length > 40 ||
-      repo.stargazers_count > 0;
+      repo.stargazers_count > 0 ||
+      repo.private;
 
     if (!interesting) continue;
 
@@ -244,8 +281,8 @@ export async function ingestFromGitHub(
       mediaUrls: media,
       whyPicked:
         media.length > 0
-          ? `Found ${media.length} media file(s) under media/assets/demo paths`
-          : "Recent public repo with a readable README/description",
+          ? `Found ${media.length} media file(s)${privacyNote}`
+          : `Recent repo with readable README/description${privacyNote}`,
     });
   }
 
@@ -259,6 +296,10 @@ export async function ingestFromGitHub(
     username,
     scanned: repos.length,
     upserted,
+    privateIncluded,
     findings: collected,
+    warning: token
+      ? undefined
+      : "No GITHUB_TOKEN — public repos only. Add a token to include private repos.",
   };
 }
