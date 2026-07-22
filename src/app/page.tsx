@@ -18,16 +18,21 @@ export default function HomePage() {
     <>
       <SiteHeader />
       <main className="shell">
-        <article className="panel hero">
-          <p className="eyebrow">Curriculum vitae · portfolio</p>
+        <section className="panel hero">
+          <p className="eyebrow">CV / portfolio</p>
           <h1>{config.siteName}</h1>
           <p className="lede">
-            Technical lead at the intersection of autonomous R&amp;D, advanced
-            materials, and aerospace systems. Funded programs, research
-            consortia, and deployable AI prototypes.
+            Technical lead working across autonomous R&amp;D, advanced
+            materials, and aerospace systems — funded programs, consortia, and
+            prototypes that ship into institutions.
           </p>
           <div className="hero-actions">
-            <a className="btn btn-primary" href="/cv.pdf" target="_blank" rel="noreferrer">
+            <a
+              className="btn btn-primary"
+              href="/cv.pdf"
+              target="_blank"
+              rel="noreferrer"
+            >
               Download CV
             </a>
             <a className="btn" href={github} target="_blank" rel="noreferrer">
@@ -44,31 +49,26 @@ export default function HomePage() {
             <span className="pill">AI / materials</span>
             <span className="pill">Aerospace</span>
             <span className="pill">Navigation</span>
-            <span className="pill">THM · expected 2027</span>
+            <span className="pill">THM · 2027</span>
           </div>
-        </article>
+        </section>
 
         <section className="panel section" id="about">
           <div className="section-head">
             <h2>About</h2>
-            <p>What I work on, without the launch-speak.</p>
+            <p>Focus areas, without hype.</p>
           </div>
           <p>
-            I lead and found work across autonomous discovery, extreme-temperature
-            propulsion materials, and spoof-resilient navigation / state
-            estimation. The through-line is turning hard technical ideas into
-            funded, partnered programs that institutions can actually run.
-          </p>
-          <p className="muted">
-            {config.siteTagline} Most of the serious output lives in
-            repositories. This page is the public index.
+            I lead work in autonomous discovery, extreme-temperature propulsion
+            materials, and spoof-resilient navigation. The common thread is
+            taking hard technical ideas into funded, partnered programs.
           </p>
         </section>
 
         <section className="panel section" id="impact">
           <div className="section-head">
             <h2>Selected impact</h2>
-            <p>Markers from recent programs and recognition.</p>
+            <p>Recent markers from programs and recognition.</p>
           </div>
           <ul className="impact-grid">
             <li className="impact-item">
@@ -85,7 +85,7 @@ export default function HomePage() {
             </li>
             <li className="impact-item">
               <strong>StartMiUp winner</strong>
-              <span>Hackathon MVP architect, Abicor Binzel challenge</span>
+              <span>Hackathon MVP · Abicor Binzel challenge</span>
             </li>
           </ul>
         </section>
@@ -93,41 +93,37 @@ export default function HomePage() {
         <section className="panel section" id="work">
           <div className="section-head">
             <h2>Selected work</h2>
-            <p>Programs and public technical artifacts.</p>
+            <p>Programs and public technical work.</p>
           </div>
           <ul className="work-list">
             <li>
               <h3>Autonomous material discovery</h3>
-              <p className="work-meta">ESA / NASA framework · related: PRISM</p>
+              <p className="work-meta">ESA / NASA framework · PRISM</p>
               <p>
-                Agentic, closed-loop discovery pipeline combining ML with
-                self-driving laboratory ideas for extreme-temperature space
+                Agentic closed-loop discovery for extreme-temperature space
                 materials.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/PRISM"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  github.com/Darth-Hidious/PRISM
+                  PRISM
                 </a>
               </p>
             </li>
             <li>
               <h3>Project SPARK</h3>
-              <p className="work-meta">
-                ESA-funded consortium · ArianeGroup, IPPT PAN
-              </p>
+              <p className="work-meta">ESA · ArianeGroup · IPPT PAN</p>
               <p>
-                Extreme-temperature alloys for next-generation space propulsion
-                inside a multi-institution European program.
+                Extreme-temperature alloys for next-generation space propulsion.
               </p>
             </li>
             <li>
               <h3>KC-UKF / spoof-resilient navigation</h3>
-              <p className="work-meta">NAVICON 2026 · Zenodo preprint</p>
+              <p className="work-meta">NAVICON 2026</p>
               <p>
-                Kinematic compatibility-field UKF for multi-sensor fusion and
-                cross-sensor trust in GNSS/INS under adversarial degradation.{" "}
+                Kinematic compatibility-field UKF for GNSS/INS under adversarial
+                degradation.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/kc-ukf"
                   target="_blank"
@@ -149,7 +145,7 @@ export default function HomePage() {
               <h3>Lunar metallurgy analysis</h3>
               <p className="work-meta">WAMS 2026 · ESA ESTEC</p>
               <p>
-                Terrane-aware lunar metallurgy framework and analysis pipeline.{" "}
+                Terrane-aware lunar metallurgy framework.{" "}
                 <a
                   href="https://github.com/Darth-Hidious/wams2026-lunar-metallurgy"
                   target="_blank"
@@ -161,13 +157,10 @@ export default function HomePage() {
             </li>
             <li>
               <h3>Differentiable ML modeling</h3>
-              <p className="work-meta">
-                Horizon Europe / EIC Pre-Accelerator · Fraunhofer
-              </p>
+              <p className="work-meta">EIC Pre-Accelerator · Fraunhofer</p>
               <p>
-                Production scale-up proposal work awarded the EIC Seal of
-                Excellence; co-developing differentiable models for complex fluid
-                / pool dynamics.
+                Differentiable models for complex fluid / pool dynamics; EIC Seal
+                of Excellence.
               </p>
             </li>
           </ul>
@@ -176,7 +169,6 @@ export default function HomePage() {
         <section className="panel section" id="credentials">
           <div className="section-head">
             <h2>Education &amp; credentials</h2>
-            <p>Background without dumping every line of the PDF.</p>
           </div>
           <div className="creds">
             <div className="cred">
@@ -197,7 +189,7 @@ export default function HomePage() {
             </div>
           </div>
           <p className="meta" style={{ marginTop: "1rem" }}>
-            Full detail: <a href="/cv.pdf">cv.pdf</a>
+            Full CV: <a href="/cv.pdf">cv.pdf</a>
           </p>
         </section>
 
@@ -205,22 +197,19 @@ export default function HomePage() {
 
         <footer className="site-footer">
           <p>
-            Contact via{" "}
             <a href={github} target="_blank" rel="noreferrer">
               GitHub
             </a>
-            ,{" "}
+            {" · "}
             <a href={x} target="_blank" rel="noreferrer">
               X
             </a>
-            , or{" "}
+            {" · "}
             <a href={linkedin} target="_blank" rel="noreferrer">
               LinkedIn
             </a>
-            . Location and phone are not published on this page.
-          </p>
-          <p>
-            <Link href="/board">Posting board</Link> is private.
+            {" · "}
+            <Link href="/board">Board</Link>
           </p>
         </footer>
       </main>

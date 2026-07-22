@@ -1,24 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { getConfig } from "@/lib/config";
 import "./globals.css";
-
-const sourceSans = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-source-sans",
-  display: "swap",
-});
-
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
-  variable: "--font-source-serif",
-  display: "swap",
-});
 
 const config = getConfig();
 
 export const metadata: Metadata = {
-  title: `${config.siteName} — CV & portfolio`,
+  title: `${config.siteName}`,
   description: config.siteTagline,
 };
 
@@ -27,7 +16,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   viewportFit: "cover",
-  themeColor: "#eef1f4",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -38,9 +27,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sourceSans.variable} ${sourceSerif.variable} h-full`}
+      className={`${GeistSans.variable} ${GeistMono.variable} h-full`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className={`${GeistSans.className} min-h-full antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
