@@ -19,7 +19,7 @@ export type AppConfig = {
 
 export function getConfig(): AppConfig {
   return {
-    siteName: process.env.SITE_NAME || "Tim the Enchanter",
+    siteName: process.env.SITE_NAME || "Siddhartha Yash Kovid",
     siteTagline:
       process.env.SITE_TAGLINE || "Cool findings. Typed, not hyped.",
     githubUsername: process.env.GITHUB_USERNAME || "Darth-Hidious",

@@ -9,22 +9,19 @@ export default async function BoardLoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-center px-6 py-20 md:px-10">
-      <p className="mono mb-3 text-xs uppercase tracking-[0.22em] text-[var(--accent)]">
-        Private desk
-      </p>
-      <h1 className="display mb-3 text-5xl">Findings board</h1>
-      <p className="mb-10 max-w-lg text-[var(--muted)]">
-        Draft dry threads with bones. Approve once. Post for real when X keys
-        are set — otherwise dry-run.
-      </p>
+    <div className="page">
+      <header className="site-header">
+        <h1>Findings board — login</h1>
+        <p className="meta">
+          Private posting desk. Password is <code>BOARD_PASSWORD</code> in
+          your environment file.
+        </p>
+        <nav>
+          <Link href="/">Home</Link>
+        </nav>
+      </header>
+      <hr />
       <LoginForm />
-      <p className="mono mt-10 text-xs text-[var(--muted)]">
-        Default password is in <code>.env.example</code>. Change it.
-      </p>
-      <Link href="/" className="sr-only">
-        Home
-      </Link>
-    </main>
+    </div>
   );
 }

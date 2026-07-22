@@ -29,12 +29,12 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto w-full max-w-md space-y-5">
-      <div>
-        <label className="mono mb-2 block text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
-          Board password
-        </label>
+    <form onSubmit={onSubmit}>
+      <p>
+        <label htmlFor="password">Board password</label>
+        <br />
         <input
+          id="password"
           className="field"
           type="password"
           value={password}
@@ -42,16 +42,16 @@ export function LoginForm() {
           autoFocus
           required
         />
-      </div>
-      {error && <p className="text-sm text-[var(--warn)]">{error}</p>}
-      <div className="flex gap-3">
+      </p>
+      {error && <p style={{ color: "var(--warn)" }}>{error}</p>}
+      <p>
         <button className="btn btn-primary" type="submit" disabled={loading}>
           {loading ? "Opening…" : "Enter board"}
-        </button>
-        <Link className="btn btn-ghost" href="/">
+        </button>{" "}
+        <Link className="btn" href="/">
           Back
         </Link>
-      </div>
+      </p>
     </form>
   );
 }
