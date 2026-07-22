@@ -10,9 +10,9 @@ export function SiteHeader() {
           {config.siteName}
         </Link>
         <nav className="top-nav" aria-label="Primary">
-          <a href="#notes">Notes</a>
-          <a href="#about">About</a>
-          <a href="#work">Work</a>
+          <a href="/#now">Now</a>
+          <a href="/#notes">Notes</a>
+          <a href="/#work">Work</a>
           <a href="/cv.pdf" target="_blank" rel="noreferrer">
             CV
           </a>

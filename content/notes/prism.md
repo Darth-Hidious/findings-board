@@ -38,4 +38,4 @@ The interactive mode is slash-command driven (`/model`, `/agent`, `/usage`, …)
 
 ## Why it sits on this site
 
-PRISM is the public face of the autonomous materials work behind ESA / NASA-framework programs and Bimo Tech’s MARC27 stack. The repo is the installable artifact; the research programs are where the closed-loop discovery actually runs.
+This is the public, installable artifact — CLI, agent shell, and docs. Partner / national program context stays off the site; if you want the tool, use the repo above. I’m actively working on it now.
