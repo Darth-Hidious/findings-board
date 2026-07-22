@@ -43,3 +43,4 @@ data/*.db
 data/*.db-journal
 data/*.json
 !.env.example
+data/
