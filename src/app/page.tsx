@@ -105,6 +105,10 @@ export default async function HomePage() {
           </div>
           <ul className="impact-grid">
             <li className="impact-item">
+              <strong>Technical lead · 2 ESA projects</strong>
+              <span>Program detail stays off this site</span>
+            </li>
+            <li className="impact-item">
               <strong>EIC Seal of Excellence</strong>
               <span>Horizon Europe / EIC Pre-Accelerator, 2026</span>
             </li>
@@ -115,10 +119,6 @@ export default async function HomePage() {
             <li className="impact-item">
               <strong>StartMiUp winner</strong>
               <span>Hackathon MVP · Abicor Binzel challenge</span>
-            </li>
-            <li className="impact-item">
-              <strong>IEEE</strong>
-              <span>Member</span>
             </li>
           </ul>
         </section>
