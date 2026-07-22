@@ -29,7 +29,7 @@ export default async function NotePage({ params }: Props) {
       <main className="shell">
         <article className="panel note-article">
           <p className="meta">
-            <Link href="/#notes">← Project notes</Link>
+            <Link href="/#notes">← Notes</Link>
             {" · "}
             <a href={note.url} target="_blank" rel="noreferrer">
               {note.fullName}

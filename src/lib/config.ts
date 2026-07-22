@@ -21,7 +21,8 @@ export function getConfig(): AppConfig {
   return {
     siteName: process.env.SITE_NAME || "Siddhartha Yash Kovid",
     siteTagline:
-      process.env.SITE_TAGLINE || "Cool findings. Typed, not hyped.",
+      process.env.SITE_TAGLINE ||
+      "Materials software, spoof-resilient navigation, aerospace systems.",
     githubUsername: process.env.GITHUB_USERNAME || "Darth-Hidious",
     xHandle: (process.env.X_HANDLE || "siddharthayko").replace(/^@/, ""),
     siteUrl: process.env.SITE_URL || "http://localhost:3000",

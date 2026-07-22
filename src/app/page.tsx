@@ -94,7 +94,7 @@ export default async function HomePage() {
 
         <section className="panel section" id="impact">
           <div className="section-head">
-            <h2>Recognition</h2>
+            <h2>Also</h2>
           </div>
           <ul className="impact-grid">
             <li className="impact-item">
